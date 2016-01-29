@@ -37,8 +37,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
     <Compile Include="PatchException.cs" />
     <Compile Include="Settings\ArrayDiffMode.cs" />
     <Compile Include="DiffOperation.cs" />
