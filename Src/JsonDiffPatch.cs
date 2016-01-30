@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using DiffMatchPatch;
 using JsonDiffPatchDotNet.Settings;
 using Newtonsoft.Json.Linq;
 
@@ -16,8 +18,8 @@ namespace JsonDiffPatchDotNet
 
 		public JsonDiffPatch(Options options)
 		{
-			if (_options == null)
-				throw new ArgumentNullException(nameof(_options));
+			if (options == null)
+				throw new ArgumentNullException(nameof(options));
 
 			_options = options;
 		}
@@ -53,13 +55,24 @@ namespace JsonDiffPatchDotNet
 				else
 				{
 					if (_options.ArrayDiff == ArrayDiffMode.Efficient
-						&& leftProperty.Type == JTokenType.Array && rightProperty.Type == JTokenType.Array)
+						&& leftProperty.Value.Type == JTokenType.Array 
+						&& rightProperty.Value.Type == JTokenType.Array)
 					{
 						// Efficient Array diffing is is NYI.
 						throw new NotImplementedException();
 					}
+					else if (_options.TextDiff == TextDiffMode.Efficient
+					    && leftProperty.Value.Type == JTokenType.String 
+						&& rightProperty.Value.Type == JTokenType.String)
+					{
+						var dmp = new diff_match_patch();
+						List<Patch> patches = dmp.patch_make(leftProperty.Value.ToObject<string>(), 
+							rightProperty.Value.ToObject<string>());
+						string patch = dmp.patch_toText(patches);
 
-					if (!leftProperty.Value.Equals(rightProperty.Value))
+						diffPatch.Add(new JProperty(rightProperty.Name, new JArray(patch, 0, 2)));
+					}
+					else if (!leftProperty.Value.Equals(rightProperty.Value))
 					{
 						diffPatch.Add(new JProperty(leftProperty.Name, new JArray(leftProperty.Value, rightProperty.Value)));
 					}
