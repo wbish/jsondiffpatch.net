@@ -120,10 +120,10 @@ namespace JsonDiffPatchDotNet
 
 			foreach (var diff in patch.Properties())
 			{
-				if (diff.Type == JTokenType.Object && ((JObject)diff.Value["_a"]) != null)
+				if (diff.Value.Type == JTokenType.Object && ((JObject)diff.Value["_a"]) != null)
 					throw new NotImplementedException("Efficient Array Diff");
 
-				if (diff.Type != JTokenType.Array)
+				if (diff.Value.Type != JTokenType.Array)
 					throw new InvalidDataException("Invalid patch object");
 
 				var property = target.Property(diff.Name);
@@ -157,12 +157,30 @@ namespace JsonDiffPatchDotNet
 				}
 				else if (value.Count == 3) // Delete, Move or TextDiff
 				{
-					if (value[2].Type != JTokenType.Integer || value[2].Value<int>() != 0)
-						throw new NotImplementedException($"Diff Operation: {value[2]}");
+					if (value[2].Type != JTokenType.Integer)
+						throw new InvalidDataException("Invalid patch object");
 
-					ValidatePatchStrict(diff.Name, property, value[0]);
+					int op = value[2].Value<int>();
 
-					target.Remove(property.Name);
+					if (op == 0)
+					{
+						ValidatePatchStrict(diff.Name, property, value[0]);
+						target.Remove(property.Name);
+					}
+					else if (op == 2)
+					{
+						var dmp = new diff_match_patch();
+						List<Patch> patches = dmp.patch_fromText(value[0].ToObject<string>());
+						throw new NotImplementedException("Efficient Text Diff");
+					}
+					else if (op == 3)
+					{
+						throw new NotImplementedException("Efficient Array Diff");
+					}
+					else
+					{
+						throw new InvalidDataException("Invalid patch object");
+					}
 				}
 				else
 				{
