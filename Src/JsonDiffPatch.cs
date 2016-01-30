@@ -44,48 +44,52 @@ namespace JsonDiffPatchDotNet
 			var diffPatch = new JObject();
 
 			// Find properties modified or deleted
-			foreach (var leftProperty in left.Properties())
+			foreach (var lp in left.Properties())
 			{
-				JProperty rightProperty = right.Property(leftProperty.Name);
+				JProperty rp = right.Property(lp.Name);
 
-				if (rightProperty == null)
+				if (rp == null)
 				{
-					diffPatch.Add(new JProperty(leftProperty.Name, new JArray(leftProperty.Value, 0, 0)));
+					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, 0, 0)));
 				}
 				else
 				{
 					if (_options.ArrayDiff == ArrayDiffMode.Efficient
-						&& leftProperty.Value.Type == JTokenType.Array 
-						&& rightProperty.Value.Type == JTokenType.Array)
+						&& lp.Value.Type == JTokenType.Array
+						&& rp.Value.Type == JTokenType.Array)
 					{
 						// Efficient Array diffing is is NYI.
 						throw new NotImplementedException();
 					}
 					else if (_options.TextDiff == TextDiffMode.Efficient
-					    && leftProperty.Value.Type == JTokenType.String 
-						&& rightProperty.Value.Type == JTokenType.String)
+						&& lp.Value.Type == JTokenType.String
+						&& rp.Value.Type == JTokenType.String)
 					{
 						var dmp = new diff_match_patch();
-						List<Patch> patches = dmp.patch_make(leftProperty.Value.ToObject<string>(), 
-							rightProperty.Value.ToObject<string>());
-						string patch = dmp.patch_toText(patches);
+						List<Patch> patches = dmp.patch_make(
+							lp.Value.ToObject<string>(),
+							rp.Value.ToObject<string>());
 
-						diffPatch.Add(new JProperty(rightProperty.Name, new JArray(patch, 0, 2)));
+						if (patches.Count > 0)
+						{
+							string patch = dmp.patch_toText(patches);
+							diffPatch.Add(new JProperty(rp.Name, new JArray(patch, 0, 2)));
+						}
 					}
-					else if (!leftProperty.Value.Equals(rightProperty.Value))
+					else if (!lp.Value.Equals(rp.Value))
 					{
-						diffPatch.Add(new JProperty(leftProperty.Name, new JArray(leftProperty.Value, rightProperty.Value)));
+						diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, rp.Value)));
 					}
 				}
 			}
 
 			// Find properties that were added 
-			foreach (var rightProperty in right.Properties())
+			foreach (var rp in right.Properties())
 			{
-				if (left.Property(rightProperty.Name) != null)
+				if (left.Property(rp.Name) != null)
 					continue;
 
-				diffPatch.Add(new JProperty(rightProperty.Name, new JArray(rightProperty.Value)));
+				diffPatch.Add(new JProperty(rp.Name, new JArray(rp.Value)));
 			}
 
 			return diffPatch;

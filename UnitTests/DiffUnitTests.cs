@@ -85,7 +85,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[TestMethod]
 		public void Diff_EfficientStringDiff_ValidPatch()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options { TextDiff = TextDiffMode.Efficient });
 			var left = JObject.Parse(@"{ ""p"": ""blah"" }");
 			var right = JObject.Parse(@"{ ""p"": ""blah1"" }");
 
@@ -97,6 +97,18 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual("@@ -1,4 +1,5 @@\n blah\n+1\n", ((JArray)result.Property("p").Value)[0], "Array Added Value");
 			Assert.AreEqual(0, ((JArray)result.Property("p").Value)[1], "Array Added Value");
 			Assert.AreEqual(2, ((JArray)result.Property("p").Value)[2 ], "Array String Diff Indicator");
+		}
+
+		[TestMethod]
+		public void Diff_EfficientStringDiff_NoChanges()
+		{
+			var jdp = new JsonDiffPatch(new Options { TextDiff = TextDiffMode.Efficient });
+			var left = JObject.Parse(@"{ ""p"": ""blah"" }");
+			var right = JObject.Parse(@"{ ""p"": ""blah"" }");
+
+			JObject result = jdp.Diff(left, right);
+
+			Assert.AreEqual(0, result.Properties().Count(), "No Changes");
 		}
 
 		[TestMethod]
