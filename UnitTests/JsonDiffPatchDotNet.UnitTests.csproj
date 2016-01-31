@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="DiffUnitTests.cs" />
     <Compile Include="PatchUnitTests.cs" />
+    <Compile Include="UnpatchUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

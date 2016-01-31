@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using DiffMatchPatch;
 using JsonDiffPatchDotNet.Settings;
 using Newtonsoft.Json.Linq;
@@ -171,7 +172,20 @@ namespace JsonDiffPatchDotNet
 					{
 						var dmp = new diff_match_patch();
 						List<Patch> patches = dmp.patch_fromText(value[0].ToObject<string>());
-						throw new NotImplementedException("Efficient Text Diff");
+
+						if (patches.Count != 1)
+							throw new InvalidDataException("Invalid textline");
+
+						string right = dmp.diff_text2(patches[0].diffs);
+
+						if (property == null)
+						{
+							target.Add(new JProperty(diff.Name, right));
+						}
+						else
+						{
+							property.Value = right;
+						}
 					}
 					else if (op == 3)
 					{
@@ -219,7 +233,7 @@ namespace JsonDiffPatchDotNet
 				if (diff.Type == JTokenType.Object && ((JObject)diff.Value["_a"]) != null)
 					throw new NotImplementedException("Efficient Array Diff");
 
-				if (diff.Type != JTokenType.Array)
+				if (diff.Value.Type != JTokenType.Array)
 					throw new InvalidDataException("Invalid patch object");
 
 				var property = target.Property(diff.Name);
@@ -248,18 +262,50 @@ namespace JsonDiffPatchDotNet
 				}
 				else if (value.Count == 3) // Delete, Move or TextDiff
 				{
-					if (value[2].Type != JTokenType.Integer || value[2].Value<int>() != 0)
+					if (value[2].Type != JTokenType.Integer)
 						throw new NotImplementedException($"Diff Operation: {value[2]}");
 
-					ValidatePatchStrict(diff.Name, property, null);
+					int op = value[2].Value<int>();
 
-					if (property == null)
+					if (op == 0)
 					{
-						target.Add(new JProperty(diff.Name, value[0]));
+						ValidatePatchStrict(diff.Name, property, null);
+
+						if (property == null)
+						{
+							target.Add(new JProperty(diff.Name, value[0]));
+						}
+						else
+						{
+							property.Value = value[0];
+						}
+					}
+					else if (op == 2)
+					{
+						var dmp = new diff_match_patch();
+						List<Patch> patches = dmp.patch_fromText(value[0].ToObject<string>());
+
+						if (patches.Count != 1)
+							throw new InvalidDataException("Invalid textline");
+
+						string left = dmp.diff_text1(patches[0].diffs);
+
+						if (property == null)
+						{
+							target.Add(new JProperty(diff.Name, left));
+						}
+						else
+						{
+							property.Value = left;
+						}
+					}
+					else if (op == 3)
+					{
+						throw new NotImplementedException("Efficient Array Diff");
 					}
 					else
 					{
-						property.Value = value[0];
+						throw new InvalidDataException("Invalid patch object");
 					}
 				}
 				else

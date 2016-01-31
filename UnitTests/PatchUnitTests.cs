@@ -55,6 +55,22 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[TestMethod]
+		public void Patch_ApplyEditText_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+			var left = JObject.Parse(@"{ ""p"" : ""bla1h"" }");
+			var right = JObject.Parse(@"{ ""p"" : ""blah1"" }");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.IsNotNull(patched, "Patched object");
+			Assert.AreEqual(1, patched.Properties().Count(), "Property");
+			Assert.AreEqual(JTokenType.String, patched.Property("p").Value.Type, "String Type");
+			Assert.AreEqual("blah1", patched.Property("p").Value, "String is: blah1");
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(PatchException))]
 		public void Patch_ApplyEditStrict_PatchException()
 		{
