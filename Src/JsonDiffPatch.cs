@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using DiffMatchPatch;
 using JsonDiffPatchDotNet.Settings;
 using Newtonsoft.Json.Linq;
@@ -52,35 +51,35 @@ namespace JsonDiffPatchDotNet
 				if (rp == null)
 				{
 					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, 0, 0)));
+					continue;
 				}
-				else
-				{
-					if (_options.ArrayDiff == ArrayDiffMode.Efficient
-						&& lp.Value.Type == JTokenType.Array
-						&& rp.Value.Type == JTokenType.Array)
-					{
-						// Efficient Array diffing is is NYI.
-						throw new NotImplementedException();
-					}
-					else if (_options.TextDiff == TextDiffMode.Efficient
-						&& lp.Value.Type == JTokenType.String
-						&& rp.Value.Type == JTokenType.String)
-					{
-						var dmp = new diff_match_patch();
-						List<Patch> patches = dmp.patch_make(
-							lp.Value.ToObject<string>(),
-							rp.Value.ToObject<string>());
 
-						if (patches.Count > 0)
-						{
-							string patch = dmp.patch_toText(patches);
-							diffPatch.Add(new JProperty(rp.Name, new JArray(patch, 0, 2)));
-						}
-					}
-					else if (!lp.Value.Equals(rp.Value))
+				if (_options.ArrayDiff == ArrayDiffMode.Efficient
+					&& lp.Value.Type == JTokenType.Array
+					&& rp.Value.Type == JTokenType.Array)
+				{
+					// Efficient Array diffing is is NYI.
+					throw new NotImplementedException();
+				}
+				else if (_options.TextDiff == TextDiffMode.Efficient
+					&& lp.Value.Type == JTokenType.String
+					&& rp.Value.Type == JTokenType.String
+					&& (lp.Value.ToString().Length > _options.MinEfficientTextDiffLength || rp.Value.ToString().Length > _options.MinEfficientTextDiffLength))
+				{
+					var dmp = new diff_match_patch();
+					List<Patch> patches = dmp.patch_make(
+						lp.Value.ToObject<string>(),
+						rp.Value.ToObject<string>());
+
+					if (patches.Count > 0)
 					{
-						diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, rp.Value)));
+						string patch = dmp.patch_toText(patches);
+						diffPatch.Add(new JProperty(rp.Name, new JArray(patch, 0, 2)));
 					}
+				}
+				else if (!lp.Value.Equals(rp.Value))
+				{
+					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, rp.Value)));
 				}
 			}
 
@@ -121,7 +120,10 @@ namespace JsonDiffPatchDotNet
 
 			foreach (var diff in patch.Properties())
 			{
-				if (diff.Value.Type == JTokenType.Object && ((JObject)diff.Value["_a"]) != null)
+				if (diff.Value.Type == JTokenType.Object 
+					&& (diff.Value["_t"] != null)
+					&& (diff.Value["_t"].Type == JTokenType.String)
+					&& (diff.Value["_t"]).Value<string>() == "a")
 					throw new NotImplementedException("Efficient Array Diff");
 
 				if (diff.Value.Type != JTokenType.Array)
@@ -187,10 +189,6 @@ namespace JsonDiffPatchDotNet
 							property.Value = right;
 						}
 					}
-					else if (op == 3)
-					{
-						throw new NotImplementedException("Efficient Array Diff");
-					}
 					else
 					{
 						throw new InvalidDataException("Invalid patch object");
@@ -230,7 +228,10 @@ namespace JsonDiffPatchDotNet
 
 			foreach (var diff in patch.Properties())
 			{
-				if (diff.Type == JTokenType.Object && ((JObject)diff.Value["_a"]) != null)
+				if (diff.Value.Type == JTokenType.Object
+					&& (diff.Value["_t"] != null)
+					&& (diff.Value["_t"].Type == JTokenType.String)
+					&& (diff.Value["_t"]).Value<string>() == "a")
 					throw new NotImplementedException("Efficient Array Diff");
 
 				if (diff.Value.Type != JTokenType.Array)
@@ -298,10 +299,6 @@ namespace JsonDiffPatchDotNet
 						{
 							property.Value = left;
 						}
-					}
-					else if (op == 3)
-					{
-						throw new NotImplementedException("Efficient Array Diff");
 					}
 					else
 					{

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using JsonDiffPatchDotNet.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -58,7 +59,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		public void Patch_ApplyEditText_Success()
 		{
 			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
-			var left = JObject.Parse(@"{ ""p"" : ""bla1h"" }");
+			var left = JObject.Parse(@"{ ""p"" : ""bla1h111111111111112312weldjidjoijfoiewjfoiefjefijfoejoijfiwoejfiewjfiwejfowjwifewjfejdewdwdewqwertyqwertifwiejifoiwfei"" }");
 			var right = JObject.Parse(@"{ ""p"" : ""blah1"" }");
 			var patch = jdp.Diff(left, right);
 
@@ -67,7 +68,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(patched, "Patched object");
 			Assert.AreEqual(1, patched.Properties().Count(), "Property");
 			Assert.AreEqual(JTokenType.String, patched.Property("p").Value.Type, "String Type");
-			Assert.AreEqual("blah1", patched.Property("p").Value, "String is: blah1");
+			Assert.AreEqual("blah1", patched.Property("p").Value, "String value");
 		}
 
 		[TestMethod]
@@ -80,6 +81,33 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var patch = jdp.Diff(left, right);
 
 			jdp.Patch(JObject.Parse("{}"), patch);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void Patch_NullLeft_Exception()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+
+			jdp.Patch(null, JObject.Parse(@"{}"));
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void Patch_NullPatch_Exception()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+
+			jdp.Patch(JObject.Parse(@"{}"), null);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(NotImplementedException))]
+		public void Patch_ArrayDiff_NotImplementedException()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+
+			jdp.Patch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }"));
 		}
 	}
 }

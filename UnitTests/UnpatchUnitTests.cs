@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using JsonDiffPatchDotNet.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -58,7 +59,8 @@ namespace JsonDiffPatchDotNet.UnitTests
 		public void Unpatch_ApplyEditText_Success()
 		{
 			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
-			var left = JObject.Parse(@"{ ""p"" : ""bla1h"" }");
+			const string value = @"bla1h111111111111112312weldjidjoijfoiewjfoiefjefijfoejoijfiwoejfiewjfiwejfowjwifewjfejdewdwdewqwertyqwertifwiejifoiwfei";
+            var left = JObject.Parse(@"{ ""p"" : """ + value + @""" }");
 			var right = JObject.Parse(@"{ ""p"" : ""blah1"" }");
 			var patch = jdp.Diff(left, right);
 
@@ -67,7 +69,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(unpatched, "Patched object");
 			Assert.AreEqual(1, unpatched.Properties().Count(), "Property");
 			Assert.AreEqual(JTokenType.String, unpatched.Property("p").Value.Type, "String Type");
-			Assert.AreEqual("bla1h", unpatched.Property("p").Value.ToObject<string>(), "String value");
+			Assert.AreEqual(value, unpatched.Property("p").Value.ToObject<string>(), "String value");
 		}
 
 		[TestMethod]
@@ -80,6 +82,33 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var patch = jdp.Diff(left, right);
 
 			jdp.Unpatch(JObject.Parse("{}"), patch);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void Unpatch_NullLeft_Exception()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+
+			jdp.Unpatch(null, JObject.Parse(@"{}"));
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void Unpatch_NullPatch_Exception()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+
+			jdp.Unpatch(JObject.Parse(@"{}"), null);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(NotImplementedException))]
+		public void Unpatch_ArrayDiff_NotImplementedException()
+		{
+			var jdp = new JsonDiffPatch(new Options { Patch = PatchMode.StrictAbort });
+
+			jdp.Unpatch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }"));
 		}
 	}
 }
