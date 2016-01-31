@@ -9,6 +9,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 	[TestClass]
 	public class PatchUnitTests
 	{
+		/*
 		[TestMethod]
 		public void Patch_ApplyDelete_Success()
 		{
@@ -109,5 +110,6 @@ namespace JsonDiffPatchDotNet.UnitTests
 
 			jdp.Patch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }"));
 		}
+		*/
 	}
 }

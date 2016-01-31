@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using JsonDiffPatchDotNet.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -15,10 +14,9 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var jdp = new JsonDiffPatch();
 			var empty = JObject.Parse(@"{}");
 
-			JObject result = jdp.Diff(empty, empty);
+			JToken result = jdp.Diff(empty, empty);
 
-			Assert.IsNotNull(result);
-			Assert.AreEqual(0, result.Properties().Count(), "No properties");
+			Assert.IsNull(result);
 		}
 
 		[TestMethod]
@@ -28,10 +26,9 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var left = JObject.Parse(@"{""p"": true }");
 			var right = JObject.Parse(@"{""p"": true }");
 
-			JObject result = jdp.Diff(left, right);
+			JToken result = jdp.Diff(left, right);
 
-			Assert.IsNotNull(result);
-			Assert.AreEqual(0, result.Properties().Count(), "No properties");
+			Assert.IsNull(result);
 		}
 
 		[TestMethod]
@@ -41,13 +38,15 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var left = JObject.Parse(@"{""p"": true }");
 			var right = JObject.Parse(@"{""p"": false }");
 
-			JObject result = jdp.Diff(left, right);
+			JToken result = jdp.Diff(left, right);
 			
-			Assert.IsNotNull(result.Property("p"), "Property Name");
-			Assert.AreEqual(JTokenType.Array, result.Property("p").Value.Type, "Array Value");
-			Assert.AreEqual(2, ((JArray)result.Property("p").Value).Count, "Array Length");
-			Assert.AreEqual(true, ((JArray)result.Property("p").Value)[0], "Array Old Value");
-			Assert.AreEqual(false, ((JArray)result.Property("p").Value)[1], "Array New Value");
+			Assert.AreEqual(JTokenType.Object, result.Type);
+			JObject obj = (JObject) result;
+			Assert.IsNotNull(obj.Property("p"), "Property Name");
+			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
+			Assert.AreEqual(2, ((JArray)obj.Property("p").Value).Count, "Array Length");
+			Assert.AreEqual(true, ((JArray)obj.Property("p").Value)[0], "Array Old Value");
+			Assert.AreEqual(false, ((JArray)obj.Property("p").Value)[1], "Array New Value");
 		}
 
 		[TestMethod]
@@ -57,14 +56,16 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var left = JObject.Parse(@"{ ""p"": true }");
 			var right = JObject.Parse(@"{ }");
 
-			JObject result = jdp.Diff(left, right);
+			JToken result = jdp.Diff(left, right);
 
-			Assert.IsNotNull(result.Property("p"), "Property Name");
-			Assert.AreEqual(JTokenType.Array, result.Property("p").Value.Type, "Array Value");
-			Assert.AreEqual(3, ((JArray)result.Property("p").Value).Count, "Array Length");
-			Assert.AreEqual(true, ((JArray)result.Property("p").Value)[0], "Array Old Value");
-			Assert.AreEqual(0, ((JArray)result.Property("p").Value)[1], "Array New Value");
-			Assert.AreEqual(0, ((JArray)result.Property("p").Value)[2], "Array Deleted Indicator");
+			Assert.AreEqual(JTokenType.Object, result.Type);
+			JObject obj = (JObject)result;
+			Assert.IsNotNull(obj.Property("p"), "Property Name");
+			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
+			Assert.AreEqual(3, ((JArray)obj.Property("p").Value).Count, "Array Length");
+			Assert.AreEqual(true, ((JArray)obj.Property("p").Value)[0], "Array Old Value");
+			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[1], "Array New Value");
+			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[2], "Array Deleted Indicator");
 		}
 
 		[TestMethod]
@@ -74,12 +75,14 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var left = JObject.Parse(@"{ }");
 			var right = JObject.Parse(@"{ ""p"": true }");
 
-			JObject result = jdp.Diff(left, right);
+			JToken result = jdp.Diff(left, right);
 
-			Assert.IsNotNull(result.Property("p"), "Property Name");
-			Assert.AreEqual(JTokenType.Array, result.Property("p").Value.Type, "Array Value");
-			Assert.AreEqual(1, ((JArray)result.Property("p").Value).Count, "Array Length");
-			Assert.AreEqual(true, ((JArray)result.Property("p").Value)[0], "Array Added Value");
+			Assert.AreEqual(JTokenType.Object, result.Type);
+			JObject obj = (JObject)result;
+			Assert.IsNotNull(obj.Property("p"), "Property Name");
+			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
+			Assert.AreEqual(1, ((JArray)obj.Property("p").Value).Count, "Array Length");
+			Assert.AreEqual(true, ((JArray)obj.Property("p").Value)[0], "Array Added Value");
 		}
 
 		[TestMethod]
@@ -89,14 +92,16 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var left = JObject.Parse(@"{ ""p"": ""lp.Value.ToString().Length > _options.MinEfficientTextDiffLength"" }");
 			var right = JObject.Parse(@"{ ""p"": ""blah1"" }");
 
-			JObject result = jdp.Diff(left, right);
+			JToken result = jdp.Diff(left, right);
 
-			Assert.IsNotNull(result.Property("p"), "Property Name");
-			Assert.AreEqual(JTokenType.Array, result.Property("p").Value.Type, "Array Value");
-			Assert.AreEqual(3, ((JArray)result.Property("p").Value).Count, "Array Length");
-			Assert.AreEqual("@@ -1,64 +1,5 @@\n-lp.Value.ToString().Length %3e _options.MinEfficientTextDiffLength\n+blah1\n", ((JArray)result.Property("p").Value)[0], "Array Added Value");
-			Assert.AreEqual(0, ((JArray)result.Property("p").Value)[1], "Array Added Value");
-			Assert.AreEqual(2, ((JArray)result.Property("p").Value)[2 ], "Array String Diff Indicator");
+			Assert.AreEqual(JTokenType.Object, result.Type);
+			JObject obj = (JObject)result;
+			Assert.IsNotNull(obj.Property("p"), "Property Name");
+			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
+			Assert.AreEqual(3, ((JArray)obj.Property("p").Value).Count, "Array Length");
+			Assert.AreEqual("@@ -1,64 +1,5 @@\n-lp.Value.ToString().Length %3e _options.MinEfficientTextDiffLength\n+blah1\n", ((JArray)obj.Property("p").Value)[0], "Array Added Value");
+			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[1], "Array Added Value");
+			Assert.AreEqual(2, ((JArray)obj.Property("p").Value)[2 ], "Array String Diff Indicator");
 		}
 
 		[TestMethod]
@@ -106,29 +111,31 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var left = JObject.Parse(@"{ ""p"": ""lp.Value.ToString().Length > _options.MinEfficientTextDiffLength"" }");
 			var right = JObject.Parse(@"{ ""p"": ""lp.Value.ToString().Length > _options.MinEfficientTextDiffLength"" }");
 
-			JObject result = jdp.Diff(left, right);
+			JToken result = jdp.Diff(left, right);
 
-			Assert.AreEqual(0, result.Properties().Count(), "No Changes");
+			Assert.IsNull(result, "No Changes");
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void Diff_LeftNull_Exception()
 		{
 			var jdp = new JsonDiffPatch();
 			var obj = JObject.Parse(@"{ }");
 
-			jdp.Diff(null, obj);
+			JToken result = jdp.Diff(null, obj);
+
+			Assert.AreEqual(JTokenType.Array, result.Type);
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Diff_RightNull_Exception()
 		{
 			var jdp = new JsonDiffPatch();
 			var obj = JObject.Parse(@"{ }");
 
-			jdp.Diff(obj, null);
+			JToken result = jdp.Diff(obj, null);
+
+			Assert.AreEqual(JTokenType.Array, result.Type);
 		}
 
 		[TestMethod]
@@ -139,6 +146,22 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var array = JObject.Parse(@"{ ""p"": [] }");
 
 			jdp.Diff(array, array);
+		}
+
+		[TestMethod]
+		public void Diff_IntStringDiff_ValidPatch()
+		{
+			var jdp = new JsonDiffPatch();
+			var left = JToken.Parse(@"1");
+			var right = JToken.Parse(@"""hello""");
+
+			JToken result = jdp.Diff(left, right);
+
+			Assert.AreEqual(JTokenType.Array, result.Type);
+			JArray array = (JArray)result;
+			Assert.AreEqual(2, array.Count);
+			Assert.AreEqual(left, array[0]);
+			Assert.AreEqual(right, array[1]);
 		}
 	}
 }

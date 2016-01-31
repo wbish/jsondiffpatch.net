@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DiffMatchPatch;
 using JsonDiffPatchDotNet.Settings;
 using Newtonsoft.Json.Linq;
@@ -33,66 +34,41 @@ namespace JsonDiffPatchDotNet
 		/// <param name="left">The base object</param>
 		/// <param name="right">The object to comprare against the base</param>
 		/// <returns>JObject in JsonDiffPatch format</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if left or right input arguments are null</exception>
-		public JObject Diff(JObject left, JObject right)
+		public JToken Diff(JToken left, JToken right)
 		{
 			if (left == null)
-				throw new ArgumentNullException(nameof(left));
+				left = new JValue("");
 			if (right == null)
-				throw new ArgumentNullException(nameof(right));
+				right = new JValue("");
 
-			var diffPatch = new JObject();
-
-			// Find properties modified or deleted
-			foreach (var lp in left.Properties())
+			if (left.Type == JTokenType.Object && right.Type == JTokenType.Object)
 			{
-				JProperty rp = right.Property(lp.Name);
-
-				if (rp == null)
-				{
-					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, 0, 0)));
-					continue;
-				}
-
-				if (_options.ArrayDiff == ArrayDiffMode.Efficient
-					&& lp.Value.Type == JTokenType.Array
-					&& rp.Value.Type == JTokenType.Array)
-				{
-					// Efficient Array diffing is is NYI.
-					throw new NotImplementedException();
-				}
-				else if (_options.TextDiff == TextDiffMode.Efficient
-					&& lp.Value.Type == JTokenType.String
-					&& rp.Value.Type == JTokenType.String
-					&& (lp.Value.ToString().Length > _options.MinEfficientTextDiffLength || rp.Value.ToString().Length > _options.MinEfficientTextDiffLength))
-				{
-					var dmp = new diff_match_patch();
-					List<Patch> patches = dmp.patch_make(
-						lp.Value.ToObject<string>(),
-						rp.Value.ToObject<string>());
-
-					if (patches.Count > 0)
-					{
-						string patch = dmp.patch_toText(patches);
-						diffPatch.Add(new JProperty(rp.Name, new JArray(patch, 0, 2)));
-					}
-				}
-				else if (!lp.Value.Equals(rp.Value))
-				{
-					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, rp.Value)));
-				}
+				return ObjectDiff((JObject)left, (JObject)right);
 			}
 
-			// Find properties that were added 
-			foreach (var rp in right.Properties())
+			if (_options.ArrayDiff == ArrayDiffMode.Efficient
+				&& left.Type == JTokenType.Array
+				&& right.Type == JTokenType.Array)
 			{
-				if (left.Property(rp.Name) != null)
-					continue;
-
-				diffPatch.Add(new JProperty(rp.Name, new JArray(rp.Value)));
+				return ArrayDiff((JArray)left, (JArray)right);
 			}
 
-			return diffPatch;
+			if (_options.TextDiff == TextDiffMode.Efficient
+				&& left.Type == JTokenType.String
+				&& right.Type == JTokenType.String
+				&& (left.ToString().Length > _options.MinEfficientTextDiffLength || right.ToString().Length > _options.MinEfficientTextDiffLength))
+			{
+				var dmp = new diff_match_patch();
+				List<Patch> patches = dmp.patch_make(left.ToObject<string>(), right.ToObject<string>());
+				return patches.Any()
+					? new JArray(dmp.patch_toText(patches), 0, (int)DiffOperation.TextDiff)
+					: null;
+			}
+
+			if (!left.Equals(right))
+				return new JArray(left, right);
+
+			return null;
 		}
 
 		/// <summary>
@@ -120,7 +96,7 @@ namespace JsonDiffPatchDotNet
 
 			foreach (var diff in patch.Properties())
 			{
-				if (diff.Value.Type == JTokenType.Object 
+				if (diff.Value.Type == JTokenType.Object
 					&& (diff.Value["_t"] != null)
 					&& (diff.Value["_t"].Type == JTokenType.String)
 					&& (diff.Value["_t"]).Value<string>() == "a")
@@ -325,16 +301,9 @@ namespace JsonDiffPatchDotNet
 		/// <param name="left">The base object</param>
 		/// <param name="right">The object to comprare against the base</param>
 		/// <returns>JObject in JsonDiffPatch format</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if left or right input arguments are null</exception>
 		public string Diff(string left, string right)
 		{
-			if (left == null)
-				throw new ArgumentNullException(nameof(left));
-			if (right == null)
-				throw new ArgumentNullException(nameof(right));
-
-			JObject obj = Diff(JObject.Parse(left), JObject.Parse(right));
-
+			JToken obj = Diff(JToken.Parse(left ?? ""), JToken.Parse(right ?? ""));
 			return obj.ToString();
 		}
 
@@ -385,6 +354,54 @@ namespace JsonDiffPatchDotNet
 		}
 
 		#endregion
+
+		private JObject ObjectDiff(JObject left, JObject right)
+		{
+			if (left == null)
+				throw new ArgumentNullException(nameof(left));
+			if (right == null)
+				throw new ArgumentNullException(nameof(right));
+
+			var diffPatch = new JObject();
+
+			// Find properties modified or deleted
+			foreach (var lp in left.Properties())
+			{
+				JProperty rp = right.Property(lp.Name);
+
+				// Property deleted
+				if (rp == null)
+				{
+					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, 0, (int)DiffOperation.Deleted)));
+					continue;
+				}
+
+				JToken d = Diff(lp.Value, rp.Value);
+				if (d != null)
+				{
+					diffPatch.Add(new JProperty(lp.Name, d));
+				}
+			}
+
+			// Find properties that were added 
+			foreach (var rp in right.Properties())
+			{
+				if (left.Property(rp.Name) != null)
+					continue;
+
+				diffPatch.Add(new JProperty(rp.Name, new JArray(rp.Value)));
+			}
+
+			if (diffPatch.Properties().Any())
+				return diffPatch;
+
+			return null;
+		}
+
+		private JArray ArrayDiff(JArray left, JArray right)
+		{
+			throw new NotImplementedException();
+		}
 
 		private void ValidatePatchStrict(string name, JProperty property, JToken oldValue)
 		{
