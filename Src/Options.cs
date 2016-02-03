@@ -1,4 +1,4 @@
-﻿namespace JsonDiffPatchDotNet.Settings
+﻿namespace JsonDiffPatchDotNet
 {
 	public sealed class Options
 	{

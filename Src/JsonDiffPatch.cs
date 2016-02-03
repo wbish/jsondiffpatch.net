@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DiffMatchPatch;
-using JsonDiffPatchDotNet.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace JsonDiffPatchDotNet

@@ -1,5 +1,4 @@
 ﻿using System;
-using JsonDiffPatchDotNet.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 

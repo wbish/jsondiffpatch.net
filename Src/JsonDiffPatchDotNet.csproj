@@ -42,13 +42,13 @@
   <ItemGroup>
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
     <Compile Include="PatchException.cs" />
-    <Compile Include="Settings\ArrayDiffMode.cs" />
+    <Compile Include="ArrayDiffMode.cs" />
     <Compile Include="DiffOperation.cs" />
     <Compile Include="JsonDiffPatch.cs" />
-    <Compile Include="Settings\PatchMode.cs" />
+    <Compile Include="PatchMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\Options.cs" />
-    <Compile Include="Settings\TextDiffMode.cs" />
+    <Compile Include="Options.cs" />
+    <Compile Include="TextDiffMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
