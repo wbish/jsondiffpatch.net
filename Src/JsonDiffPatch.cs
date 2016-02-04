@@ -30,9 +30,10 @@ namespace JsonDiffPatchDotNet
 		/// The output is a JObject that contains enough information to represent the
 		/// delta between the two objects and to be able perform patch and reverse operations.
 		/// </summary>
-		/// <param name="left">The base object</param>
-		/// <param name="right">The object to comprare against the base</param>
-		/// <returns>JObject in JsonDiffPatch format</returns>
+		/// <param name="left">The base JSON object</param>
+		/// <param name="right">The JSON object to compare against the base</param>
+		/// <returns>JSON Patch Document</returns>
+		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
 		public JToken Diff(JToken left, JToken right)
 		{
 			if (left == null)
@@ -49,7 +50,7 @@ namespace JsonDiffPatchDotNet
 				&& left.Type == JTokenType.Array
 				&& right.Type == JTokenType.Array)
 			{
-				return ArrayDiff((JArray)left, (JArray)right);
+				throw new NotImplementedException("Array Diff");
 			}
 
 			if (_options.TextDiff == TextDiffMode.Efficient
@@ -72,15 +73,12 @@ namespace JsonDiffPatchDotNet
 
 		/// <summary>
 		/// Patch a JSON object
-		/// 
-		/// The output is a patched JObject.
 		/// </summary>
-		/// <param name="left">Unpatched object</param>
-		/// <param name="patch">Patch document</param>
-		/// <returns>Patched JObject</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if obj or patch arguments are null</exception>
+		/// <param name="left">Unpatched JSON object</param>
+		/// <param name="patch">JSON Patch Document</param>
+		/// <returns>Patched JSON object</returns>
 		/// <exception cref="System.IO.InvalidDataException">Thrown if the patch document is invalid</exception>
-		/// <exception cref="JsonDiffPatchDotNet.PatchException">Thrown if PatchMode is StrictAbort and an unexpected value is encountered</exception>
+		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
 		public JToken Patch(JToken left, JToken patch)
 		{
 			if (patch == null)
@@ -88,29 +86,27 @@ namespace JsonDiffPatchDotNet
 
 			if (patch.Type == JTokenType.Object)
 			{
-				var patchObj = (JObject) patch;
+				var patchObj = (JObject)patch;
 				JProperty arrayDiffCanary = patchObj.Property("_t");
 
 				if (arrayDiffCanary != null && arrayDiffCanary.ToObject<string>() == "a")
 				{
 					throw new NotImplementedException("Array Diff");
 				}
-				
+
 				return ObjectPatch(left as JObject, patchObj);
 			}
 
 			if (patch.Type == JTokenType.Array)
 			{
-				var patchArray = (JArray) patch;
+				var patchArray = (JArray)patch;
 
 				if (patchArray.Count == 1) // Add
 				{
-					//ValidatePatchStrict(diff.Name, property, null);
 					return patchArray[0];
 				}
 				else if (patchArray.Count == 2) // Replace
 				{
-					//ValidatePatchStrict(diff.Name, property, patchArray[0]);
 					return patchArray[1];
 				}
 				else if (patchArray.Count == 3) // Delete, Move or TextDiff
@@ -122,7 +118,6 @@ namespace JsonDiffPatchDotNet
 
 					if (op == 0)
 					{
-						//ValidatePatchStrict(diff.Name, property, patchArray[0]);
 						return null;
 					}
 					else if (op == 2)
@@ -152,100 +147,63 @@ namespace JsonDiffPatchDotNet
 
 		/// <summary>
 		/// Unpatch a JSON object
-		/// 
-		/// The output is an unpatched JObject.
 		/// </summary>
-		/// <param name="obj">Patched object</param>
-		/// <param name="patch">Patch document</param>
-		/// <returns>Unpatched JObject</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if obj or patch arguments are null</exception>
+		/// <param name="right">Patched JSON object</param>
+		/// <param name="patch">JSON Patch Document</param>
+		/// <returns>Unpatched JSON object</returns>
 		/// <exception cref="System.IO.InvalidDataException">Thrown if the patch document is invalid</exception>
-		/// <exception cref="JsonDiffPatchDotNet.PatchException">Thrown if PatchMode is StrictAbort and an unexpected value is encountered</exception>
-		public JObject Unpatch(JObject obj, JObject patch)
+		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
+		public JToken Unpatch(JToken right, JToken patch)
 		{
-			if (obj == null)
-				throw new ArgumentNullException(nameof(obj));
 			if (patch == null)
-				throw new ArgumentNullException(nameof(patch));
+				return right;
 
-			if (_options.Patch != PatchMode.Lenient && _options.Patch != PatchMode.StrictAbort)
-				throw new NotImplementedException($"PatchMode: {_options.Patch}");
-
-			var target = (JObject)obj.DeepClone();
-
-			foreach (var diff in patch.Properties())
+			if (patch.Type == JTokenType.Object)
 			{
-				if (diff.Value.Type == JTokenType.Object
-					&& (diff.Value["_t"] != null)
-					&& (diff.Value["_t"].Type == JTokenType.String)
-					&& (diff.Value["_t"]).Value<string>() == "a")
-					throw new NotImplementedException("Efficient Array Diff");
+				var patchObj = (JObject)patch;
+				JProperty arrayDiffCanary = patchObj.Property("_t");
 
-				if (diff.Value.Type != JTokenType.Array)
-					throw new InvalidDataException("Invalid patch object");
-
-				var property = target.Property(diff.Name);
-				var value = (JArray)diff.Value;
-
-				if (value.Count == 1) // Add (we need to remove the property)
+				if (arrayDiffCanary != null && arrayDiffCanary.ToObject<string>() == "a")
 				{
-					// The unpatched object should either not contain this property or
-					// the value of the property should be null
-					ValidatePatchStrict(diff.Name, property, value[0]);
-
-					target.Remove(property.Name);
+					throw new NotImplementedException("Array Diff");
 				}
-				else if (value.Count == 2) // Replace
-				{
-					ValidatePatchStrict(diff.Name, property, value[1]);
 
-					if (property == null)
-					{
-						target.Add(new JProperty(diff.Name, value[0]));
-					}
-					else
-					{
-						property.Value = value[0];
-					}
+				return ObjectUnpatch(right as JObject, patchObj);
+			}
+
+			if (patch.Type == JTokenType.Array)
+			{
+				var patchArray = (JArray)patch;
+
+				if (patchArray.Count == 1) // Add (we need to remove the property)
+				{
+					return null;
 				}
-				else if (value.Count == 3) // Delete, Move or TextDiff
+				else if (patchArray.Count == 2) // Replace
 				{
-					if (value[2].Type != JTokenType.Integer)
-						throw new NotImplementedException($"Diff Operation: {value[2]}");
+					return patchArray[0];
+				}
+				else if (patchArray.Count == 3) // Delete, Move or TextDiff
+				{
+					if (patchArray[2].Type != JTokenType.Integer)
+						throw new InvalidDataException("Invalid patch object");
 
-					int op = value[2].Value<int>();
+					int op = patchArray[2].Value<int>();
 
 					if (op == 0)
 					{
-						ValidatePatchStrict(diff.Name, property, null);
-
-						if (property == null)
-						{
-							target.Add(new JProperty(diff.Name, value[0]));
-						}
-						else
-						{
-							property.Value = value[0];
-						}
+						return patchArray[0];
 					}
 					else if (op == 2)
 					{
 						var dmp = new diff_match_patch();
-						List<Patch> patches = dmp.patch_fromText(value[0].ToObject<string>());
+						List<Patch> patches = dmp.patch_fromText(patchArray[0].ToObject<string>());
 
 						if (patches.Count != 1)
 							throw new InvalidDataException("Invalid textline");
 
 						string left = dmp.diff_text1(patches[0].diffs);
-
-						if (property == null)
-						{
-							target.Add(new JProperty(diff.Name, left));
-						}
-						else
-						{
-							property.Value = left;
-						}
+						return left;
 					}
 					else
 					{
@@ -258,7 +216,7 @@ namespace JsonDiffPatchDotNet
 				}
 			}
 
-			return target;
+			return null;
 		}
 
 		#region String Overrides
@@ -269,53 +227,42 @@ namespace JsonDiffPatchDotNet
 		/// The output is a JObject that contains enough information to represent the
 		/// delta between the two objects and to be able perform patch and reverse operations.
 		/// </summary>
-		/// <param name="left">The base object</param>
-		/// <param name="right">The object to comprare against the base</param>
-		/// <returns>JObject in JsonDiffPatch format</returns>
+		/// <param name="left">The base JSON object</param>
+		/// <param name="right">The JSON object to compare against the base</param>
+		/// <returns>JSON Patch Document</returns>
+		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
 		public string Diff(string left, string right)
 		{
 			JToken obj = Diff(JToken.Parse(left ?? ""), JToken.Parse(right ?? ""));
-			return obj.ToString();
+			return obj?.ToString();
 		}
 
 		/// <summary>
 		/// Patch a JSON object
-		/// 
-		/// The output is a patched JObject.
 		/// </summary>
-		/// <param name="obj">Unpatched object</param>
-		/// <param name="patch">Patch document</param>
-		/// <returns>Patched JObject</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if obj or patch arguments are null</exception>
+		/// <param name="left">Unpatched JSON object</param>
+		/// <param name="patch">JSON Patch Document</param>
+		/// <returns>Patched JSON object</returns>
 		/// <exception cref="System.IO.InvalidDataException">Thrown if the patch document is invalid</exception>
-		/// <exception cref="JsonDiffPatchDotNet.PatchException">Thrown if PatchMode is StrictAbort and an unexpected value is encountered</exception>
-		public string Patch(string obj, string patch)
+		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
+		public string Patch(string left, string patch)
 		{
-			JToken patchedObj = Patch(JToken.Parse(obj), JToken.Parse(patch));
-			return patchedObj.ToString();
+			JToken patchedObj = Patch(JToken.Parse(left ?? ""), JToken.Parse(patch ?? ""));
+			return patchedObj?.ToString();
 		}
 
 		/// <summary>
 		/// Unpatch a JSON object
-		/// 
-		/// The output is an unpatched JObject.
 		/// </summary>
-		/// <param name="obj">Patched object</param>
-		/// <param name="patch">Patch document</param>
-		/// <returns>Unpatched JObject</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if obj or patch arguments are null</exception>
+		/// <param name="right">Patched JSON object</param>
+		/// <param name="patch">JSON Patch Document</param>
+		/// <returns>Unpatched JSON object</returns>
 		/// <exception cref="System.IO.InvalidDataException">Thrown if the patch document is invalid</exception>
-		/// <exception cref="JsonDiffPatchDotNet.PatchException">Thrown if PatchMode is StrictAbort and an unexpected value is encountered</exception>
-		public string Unpatch(string obj, string patch)
+		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
+		public string Unpatch(string right, string patch)
 		{
-			if (obj == null)
-				throw new ArgumentNullException(nameof(obj));
-			if (patch == null)
-				throw new ArgumentNullException(nameof(patch));
-
-			JObject unpatchedObj = Unpatch(JObject.Parse(obj), JObject.Parse(patch));
-
-			return unpatchedObj.ToString();
+			JToken unpatchedObj = Unpatch(JToken.Parse(right ?? ""), JToken.Parse(patch ?? ""));
+			return unpatchedObj?.ToString();
 		}
 
 		#endregion
@@ -370,9 +317,6 @@ namespace JsonDiffPatchDotNet
 			if (patch == null)
 				return obj;
 
-			if (_options.Patch != PatchMode.Lenient && _options.Patch != PatchMode.StrictAbort)
-				throw new NotImplementedException($"PatchMode: {_options.Patch}");
-
 			var target = (JObject)obj.DeepClone();
 
 			foreach (var diff in patch.Properties())
@@ -402,32 +346,40 @@ namespace JsonDiffPatchDotNet
 			return target;
 		}
 
-		private JArray ArrayDiff(JArray left, JArray right)
+		private JObject ObjectUnpatch(JObject obj, JObject patch)
 		{
-			throw new NotImplementedException();
-		}
+			if (obj == null)
+				obj = new JObject();
+			if (patch == null)
+				return obj;
 
-		private void ValidatePatchStrict(string name, JProperty property, JToken oldValue)
-		{
-			/*
-			if (_options.Patch == PatchMode.StrictAbort)
+			var target = (JObject)obj.DeepClone();
+
+			foreach (var diff in patch.Properties())
 			{
-				if (property == null && oldValue != null)
-				{
-					throw new PatchException(name, oldValue.ToString(), string.Empty);
-				}
+				var property = target.Property(diff.Name);
+				var patchValue = diff.Value;
 
-				if (property != null && oldValue == null)
+				// We need to special case addition when doing objects since an undo add is a removal of a property
+				// not a null assignment
+				if (patchValue.Type == JTokenType.Array && ((JArray)patchValue).Count == 1)
 				{
-					throw new PatchException(name, string.Empty, property.Value.ToString());
+					target.Remove(property.Name);
 				}
-
-				if (property != null && !property.Value.Equals(oldValue))
+				else
 				{
-					throw new PatchException(name, oldValue.ToString(), property.Value.ToString());
+					if (property == null)
+					{
+						target.Add(new JProperty(diff.Name, Unpatch(null, patchValue)));
+					}
+					else
+					{
+						property.Value = Unpatch(property.Value, patchValue);
+					}
 				}
 			}
-			*/
+
+			return target;
 		}
 	}
 }

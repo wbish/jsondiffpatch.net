@@ -41,11 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
-    <Compile Include="PatchException.cs" />
     <Compile Include="ArrayDiffMode.cs" />
     <Compile Include="DiffOperation.cs" />
     <Compile Include="JsonDiffPatch.cs" />
-    <Compile Include="PatchMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="TextDiffMode.cs" />
