@@ -69,5 +69,5 @@ nuget install jsondiffpatchdotnet
 
 ## Attributions
 * [jsondiffpatch](https://github.com/benjamine/jsondiffpatch)
-* [google-diff-patch-match](https://code.google.com/archive/p/google-diff-match-patch/)
+* [google-diff-match-patch](https://code.google.com/archive/p/google-diff-match-patch/)
 * [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/)
