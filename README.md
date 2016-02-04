@@ -12,11 +12,11 @@ Note: Efficient array diff is currently NYI.
 Diff two json objects
 
 ``` C#
-  var dmp = new JsonDiffPatch();
+  var jdp = new JsonDiffPatch();
   var left = JToken.Parse(@"{ ""key"": false }");
   var right = JToken.Parse(@"{ ""key"": true }");
   
-  JToken patch = dmp.Diff(left, right);
+  JToken patch = jdp.Diff(left, right);
   
   Console.WriteLine(patch.ToString());
   
@@ -31,12 +31,12 @@ Diff two json objects
 Patch a left object with a patch document
 
 ``` C#
-  var dmp = new JsonDiffPatch();
+  var jdp = new JsonDiffPatch();
   var left = JToken.Parse(@"{ ""key"": false }");
   var right = JToken.Parse(@"{ ""key"": true }");
-  JToken patch = dmp.Diff(left, right);
+  JToken patch = jdp.Diff(left, right);
   
-  var output = dmp.Patch(left, patch);
+  var output = jdp.Patch(left, patch);
   
   Console.WriteLine(output.ToString());
   
@@ -49,12 +49,12 @@ Patch a left object with a patch document
 ### Unpatch
 
 ``` C#
-  var dmp = new JsonDiffPatch();
+  var jdp = new JsonDiffPatch();
   var left = JToken.Parse(@"{ ""key"": false }");
   var right = JToken.Parse(@"{ ""key"": true }");
-  JToken patch = dmp.Diff(left, right);
+  JToken patch = jdp.Diff(left, right);
   
-  var output = dmp.Unpatch(right, patch);
+  var output = jdp.Unpatch(right, patch);
   
   Console.WriteLine(output.ToString());
   
