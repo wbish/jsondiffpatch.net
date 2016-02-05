@@ -5,4 +5,7 @@ install:
   - nuget install NUnit.Runners -Version 3.0.1 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release JsonDiffPatchDotNet.sln
-  - mono ./testrunner/NUnit.Runners.3.0.1/tools/nunit3-console.exe ./UnitTests/bin/Release/JsonDiffPatchDotNet.UnitTests.dll
+  - mono ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe ./UnitTests/bin/Release/JsonDiffPatchDotNet.UnitTests.dll
+addons:
+    code_climate:
+        repo_token: d47adeab3eb5e092fa3bcbc22407535b0da0a61a2353450d0925150b48bf8090
