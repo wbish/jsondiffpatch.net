@@ -45,7 +45,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
 			Assert.AreEqual(2, ((JArray)obj.Property("p").Value).Count, "Array Length");
 			Assert.IsTrue(((JArray)obj.Property("p").Value)[0].ToObject<bool>(), "Array Old Value");
-			Assert.AreEqual(false, ((JArray)obj.Property("p").Value)[1], "Array New Value");
+			Assert.IsTrue(((JArray)obj.Property("p").Value)[1].ToObject<bool>(), "Array New Value");
 		}
 
 		[Test]
@@ -63,8 +63,8 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
 			Assert.AreEqual(3, ((JArray)obj.Property("p").Value).Count, "Array Length");
 			Assert.IsTrue(((JArray)obj.Property("p").Value)[0].ToObject<bool>(), "Array Old Value");
-			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[1], "Array New Value");
-			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[2], "Array Deleted Indicator");
+			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[1].ToObject<int>(), "Array New Value");
+			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[2].ToObject<int>(), "Array Deleted Indicator");
 		}
 
 		[Test]
@@ -99,8 +99,8 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
 			Assert.AreEqual(3, ((JArray)obj.Property("p").Value).Count, "Array Length");
 			Assert.AreEqual("@@ -1,64 +1,5 @@\n-lp.Value.ToString().Length %3e _options.MinEfficientTextDiffLength\n+blah1\n", ((JArray)obj.Property("p").Value)[0].ToString(), "Array Added Value");
-			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[1], "Array Added Value");
-			Assert.AreEqual(2, ((JArray)obj.Property("p").Value)[2], "Array String Diff Indicator");
+			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[1].ToObject<int>(), "Array Added Value");
+			Assert.AreEqual(2, ((JArray)obj.Property("p").Value)[2].ToObject<int>(), "Array String Diff Indicator");
 		}
 
 		[Test]
