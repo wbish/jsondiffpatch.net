@@ -18,11 +18,10 @@ install:
   - cd ../../wbish/jsondiffpatch.net
 script:
   - xbuild /p:Configuration=Release JsonDiffPatchDotNet.sln
-  - mono ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe ./UnitTests/bin/Release/JsonDiffPatchDotNet.UnitTests.dll
   - export LD_LIBRARY_PATH=/usr/local/lib
   - mono --debug --profile=monocov:outfile=monocovCoverage.cov,+[Src] ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe --process=Single ./UnitTests/bin/Release/JsonDiffPatchDotNet.UnitTests.dll
   - monocov --export-xml=monocovCoverage monocovCoverage.cov
   - REPO_COMMIT_AUTHOR=$(git show -s --pretty=format:"%cn")
   - REPO_COMMIT_AUTHOR_EMAIL=$(git show -s --pretty=format:"%ce")
   - REPO_COMMIT_MESSAGE=$(git show -s --pretty=format:"%s")
-  - mono ./coveralls/coveralls.net.0.6.0/csmacnz.Coveralls.exe --monocov -i ./monocovCoverage --repoToken p5diEq5dqlAGMtFGth2dAWkm4SucjUpEU --commitId $TRAVIS_COMMIT --commitBranch $TRAVIS_BRANCH --commitAuthor "$REPO_COMMIT_AUTHOR" --commitEmail "$REPO_COMMIT_AUTHOR_EMAIL" --commitMessage "$REPO_COMMIT_MESSAGE" --jobId $TRAVIS_JOB_ID  --serviceName travis-ci  --useRelativePaths
+  - mono ./coveralls/coveralls.net.0.6.0/tools/csmacnz.Coveralls.exe --monocov -i ./monocovCoverage --repoToken p5diEq5dqlAGMtFGth2dAWkm4SucjUpEU --commitId $TRAVIS_COMMIT --commitBranch $TRAVIS_BRANCH --commitAuthor "$REPO_COMMIT_AUTHOR" --commitEmail "$REPO_COMMIT_AUTHOR_EMAIL" --commitMessage "$REPO_COMMIT_MESSAGE" --jobId $TRAVIS_JOB_ID  --serviceName travis-ci  --useRelativePaths
