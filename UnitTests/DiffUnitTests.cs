@@ -45,7 +45,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
 			Assert.AreEqual(2, ((JArray)obj.Property("p").Value).Count, "Array Length");
 			Assert.IsTrue(((JArray)obj.Property("p").Value)[0].ToObject<bool>(), "Array Old Value");
-			Assert.IsTrue(((JArray)obj.Property("p").Value)[1].ToObject<bool>(), "Array New Value");
+			Assert.IsFalse(((JArray)obj.Property("p").Value)[1].ToObject<bool>(), "Array New Value");
 		}
 
 		[Test]
