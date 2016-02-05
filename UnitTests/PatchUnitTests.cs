@@ -68,7 +68,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(patched, "Patched object");
 			Assert.AreEqual(1, patched.Properties().Count(), "Property");
 			Assert.AreEqual(JTokenType.String, patched.Property("p").Value.Type, "String Type");
-			Assert.AreEqual("blah1", patched.Property("p").Value, "String value");
+			Assert.AreEqual("blah1", patched.Property("p").Value.ToString(), "String value");
 		}
 
 		[Test]
