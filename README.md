@@ -1,4 +1,7 @@
 # jsondiffpatch.net
+<!--- badges -->
+[![Build Status](https://secure.travis-ci.org/wbish/jsondiffpatch.net.svg)](http://travis-ci.org/wbish/jsondiffpatch.net)
+
 Json object diffs and patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
 
 ## Usage
