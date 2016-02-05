@@ -1,7 +1,7 @@
 # jsondiffpatch.net
 <!--- badges -->
 [![Build Status](https://secure.travis-ci.org/wbish/jsondiffpatch.net.svg)](http://travis-ci.org/wbish/jsondiffpatch.net)
-[![Code Coverage](https://codeclimate.com/github/wbish/jsondiffpatch.net/badges/coverage.svg)](https://codeclimate.com/github/wbish/jsondiffpatch.net/coverage)
+[![Coverage Status](https://coveralls.io/repos/github/wbish/jsondiffpatch.net/badge.svg?branch=master)](https://coveralls.io/github/wbish/jsondiffpatch.net?branch=master)
 
 Json object diffs and patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
 
