@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace JsonDiffPatchDotNet.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class UnpatchUnitTests
 	{
-		[TestMethod]
+		[Test]
 		public void Unpatch_ObjectApplyDelete_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -24,7 +24,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsTrue(unpatched.Property("p").Value.ToObject<bool>(), "Patched Property");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Unpatch_ObjectApplyAdd_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -38,7 +38,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(0, unpatched.Properties().Count(), "Property Deleted");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Unpatch_ObjectApplyEdit_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -54,7 +54,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsFalse(unpatched.Property("p").Value.ToObject<bool>(), "Patched Property");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Unpatch_ObjectApplyEditText_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -71,7 +71,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(value, unpatched.Property("p").Value.ToObject<string>(), "String value");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Unpatch_NestedObjectApplyEdit_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -89,13 +89,13 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsFalse(((JObject)patched.Property("i").Value).Property("p").Value.ToObject<bool>());
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(NotImplementedException))]
+		[Test]
 		public void Unpatch_ArrayDiff_NotImplementedException()
 		{
 			var jdp = new JsonDiffPatch();
 
-			jdp.Unpatch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }"));
+			Assert.Throws<NotImplementedException>(
+				() => jdp.Unpatch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }")));
 		}
 	}
 }

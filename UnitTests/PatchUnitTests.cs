@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace JsonDiffPatchDotNet.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class PatchUnitTests
 	{
 
-		[TestMethod]
+		[Test]
 		public void Patch_ObjectApplyDelete_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -23,7 +23,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(0, patched.Properties().Count(), "Property Deleted");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Patch_ObjectApplyAdd_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -39,7 +39,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsTrue(patched.Property("p").Value.ToObject<bool>(), "Patched Property");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Patch_ObjectApplyEdit_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -55,7 +55,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsTrue(patched.Property("p").Value.ToObject<bool>(), "Patched Property");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Patch_ObjectApplyEditText_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -71,7 +71,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual("blah1", patched.Property("p").Value, "String value");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Patch_NestedObjectApplyEdit_Success()
 		{
 			var jdp = new JsonDiffPatch();
@@ -89,7 +89,33 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsTrue(((JObject)patched.Property("i").Value).Property("p").Value.ToObject<bool>());
 		}
 
-		[TestMethod]
+		[Test]
+		public void Patch_NestedComplexEdit_Success()
+		{
+			var jdp = new JsonDiffPatch();
+			var left = JObject.Parse(@"{ ""i"": { ""1"" : 1, ""2"": 2 }, ""j"": [0, 2, 4], ""k"": [1] }");
+			var right = JObject.Parse(@"{ ""i"": { ""1"" : 1, ""2"": 3 }, ""j"": [0, 2, 3], ""k"": null }");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_NestedComplexEditDifferentLeft_Success()
+		{
+			var jdp = new JsonDiffPatch();
+			var left = JObject.Parse(@"{ ""i"": { ""1"" : 1, ""2"": 2 }, ""j"": [0, 2, 4], ""k"": [1] }");
+			var right = JObject.Parse(@"{ ""i"": { ""1"" : 1, ""2"": 3 }, ""j"": [0, 2, 3], ""k"": null }");
+			var patch = jdp.Diff(JObject.Parse(@"{ ""k"": { ""i"": [1] } }"), right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
 		public void Patch_NullLeft_Exception()
 		{
 			var jdp = new JsonDiffPatch();
@@ -102,13 +128,13 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(true, result.ToObject<bool>());
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(NotImplementedException))]
+		[Test]
 		public void Patch_ArrayDiff_NotImplementedException()
 		{
 			var jdp = new JsonDiffPatch();
 
-			jdp.Patch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }"));
+			Assert.Throws<NotImplementedException>(
+				() => jdp.Patch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }")));
 		}
 	}
 }

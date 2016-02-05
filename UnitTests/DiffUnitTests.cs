@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace JsonDiffPatchDotNet.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class DiffUnitTests
 	{
-		[TestMethod]
+		[Test]
 		public void Diff_EmptyObjects_EmptyPatch()
 		{
 			var jdp = new JsonDiffPatch();
@@ -18,7 +18,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNull(result);
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_EqualBooleanProperty_NoDiff()
 		{
 			var jdp = new JsonDiffPatch();
@@ -30,7 +30,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNull(result);
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_DiffBooleanProperty_ValidPatch()
 		{
 			var jdp = new JsonDiffPatch();
@@ -48,7 +48,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(false, ((JArray)obj.Property("p").Value)[1], "Array New Value");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_BooleanPropertyDeleted_ValidPatch()
 		{
 			var jdp = new JsonDiffPatch();
@@ -67,7 +67,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(0, ((JArray)obj.Property("p").Value)[2], "Array Deleted Indicator");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_BooleanPropertyAdded_ValidPatch()
 		{
 			var jdp = new JsonDiffPatch();
@@ -84,7 +84,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(true, ((JArray)obj.Property("p").Value)[0], "Array Added Value");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_EfficientStringDiff_ValidPatch()
 		{
 			var jdp = new JsonDiffPatch(new Options { TextDiff = TextDiffMode.Efficient });
@@ -103,7 +103,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(2, ((JArray)obj.Property("p").Value)[2 ], "Array String Diff Indicator");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_EfficientStringDiff_NoChanges()
 		{
 			var jdp = new JsonDiffPatch(new Options { TextDiff = TextDiffMode.Efficient });
@@ -115,7 +115,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNull(result, "No Changes");
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_LeftNull_Exception()
 		{
 			var jdp = new JsonDiffPatch();
@@ -126,7 +126,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(JTokenType.Array, result.Type);
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_RightNull_Exception()
 		{
 			var jdp = new JsonDiffPatch();
@@ -137,17 +137,16 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(JTokenType.Array, result.Type);
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(NotImplementedException))]
+		[Test]
 		public void Diff_EfficientArrayDiff_Exception()
 		{
 			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var array = JObject.Parse(@"{ ""p"": [] }");
 
-			jdp.Diff(array, array);
+			Assert.Throws<NotImplementedException>(() => jdp.Diff(array, array));
 		}
 
-		[TestMethod]
+		[Test]
 		public void Diff_IntStringDiff_ValidPatch()
 		{
 			var jdp = new JsonDiffPatch();
