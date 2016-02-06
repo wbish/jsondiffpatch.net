@@ -50,7 +50,7 @@ namespace JsonDiffPatchDotNet
 				&& left.Type == JTokenType.Array
 				&& right.Type == JTokenType.Array)
 			{
-				throw new NotImplementedException("Array Diff");
+				return ArrayDiff((JArray)left, (JArray)right);
 			}
 
 			if (_options.TextDiff == TextDiffMode.Efficient
@@ -89,7 +89,11 @@ namespace JsonDiffPatchDotNet
 				var patchObj = (JObject)patch;
 				JProperty arrayDiffCanary = patchObj.Property("_t");
 
-				if (arrayDiffCanary != null && arrayDiffCanary.ToObject<string>() == "a")
+				if (left != null
+					&& left.Type == JTokenType.Array
+					&& arrayDiffCanary != null
+					&& arrayDiffCanary.Value.Type == JTokenType.String
+					&& arrayDiffCanary.ToObject<string>() == "a")
 				{
 					throw new NotImplementedException("Array Diff");
 				}
@@ -163,7 +167,11 @@ namespace JsonDiffPatchDotNet
 				var patchObj = (JObject)patch;
 				JProperty arrayDiffCanary = patchObj.Property("_t");
 
-				if (arrayDiffCanary != null && arrayDiffCanary.ToObject<string>() == "a")
+				if (right != null
+					&& right.Type == JTokenType.Array
+					&& arrayDiffCanary != null
+					&& arrayDiffCanary.Value.Type == JTokenType.String
+					&& arrayDiffCanary.ToObject<string>() == "a")
 				{
 					throw new NotImplementedException("Array Diff");
 				}
@@ -308,6 +316,90 @@ namespace JsonDiffPatchDotNet
 				return diffPatch;
 
 			return null;
+		}
+
+		private JObject ArrayDiff(JArray left, JArray right)
+		{
+			var result = JObject.Parse(@"{ ""_t"": ""a"" }");
+
+			int commonHead = 0;
+			int commonTail = 0;
+
+			// separate common head
+			while (commonHead < left.Count
+				&& commonHead < right.Count()
+				&& left[commonHead].Equals(right[commonHead]))
+			{
+				commonHead++;
+			}
+
+			// separate common tail
+			while (commonTail + commonHead < left.Count()
+				&& commonTail + commonHead < right.Count()
+				&& left[left.Count() - 1 - commonTail].Equals(right[right.Count() - 1 - commonTail]))
+			{
+				commonTail++;
+			}
+
+			if (commonHead + commonTail == left.Count())
+			{
+				if (left.Count() == right.Count())
+				{
+					// arrays are identical
+					return null;
+				}
+				// trivial case, a block (1 or more consecutive items) was added
+				for (int index = commonHead; index < right.Count() - commonTail; ++index)
+				{
+					result[$"{index}"] = new JArray(right[index]);
+				}
+				return result;
+			}
+			if (commonHead + commonTail == right.Count())
+			{
+				// trivial case, a block (1 or more consecutive items) was removed
+				for (int index = commonHead; index < left.Count() - commonTail; ++index)
+				{
+					result[$"_{index}"] = new JArray(left[index], 0, (int)DiffOperation.Deleted);
+				}
+				return result;
+			}
+
+			// diff is not trivial, find the LCS (Longest Common Subsequence)
+			List<JToken> trimmedLeft = left.ToList().GetRange(commonHead, left.Count() - commonTail - commonHead);
+			List<JToken> trimmedRight = right.ToList().GetRange(commonHead, right.Count() - commonTail - commonHead);
+			Lcs lcs = Lcs.Get(trimmedLeft, trimmedRight);
+
+			for (int index = commonHead; index < left.Count() - commonTail; ++index)
+			{
+				if (lcs.Indices1.IndexOf(index - commonHead) < 0)
+				{
+					// removed
+					result[$"_{index}"] = new JArray(left[index], 0, 0);
+				}
+			}
+
+			for (int index = commonHead; index < right.Count() - commonTail; index++)
+			{
+				var indexOnArray2 = lcs.Indices2.IndexOf(index - commonHead);
+				if (indexOnArray2 < 0)
+				{
+					// Added
+					result[$"{index}"] = new JArray(right[index]);
+				}
+				else
+				{
+					var li = lcs.Indices1[indexOnArray2] + commonHead;
+					var ri = lcs.Indices2[indexOnArray2] + commonHead;
+					JToken diff = Diff(left[li], right[ri]);
+					if (diff != null)
+					{
+						result[$"{index}"] = diff;
+					}
+				}
+			}
+
+			return result;
 		}
 
 		private JObject ObjectPatch(JObject obj, JObject patch)

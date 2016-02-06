@@ -134,7 +134,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var jdp = new JsonDiffPatch();
 
 			Assert.Throws<NotImplementedException>(
-				() => jdp.Patch(JObject.Parse(@"{}"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }")));
+				() => jdp.Patch(JObject.Parse(@"{ ""p"": [] }"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }")));
 		}
 	}
 }

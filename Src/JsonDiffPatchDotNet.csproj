@@ -51,6 +51,7 @@
     <Compile Include="ArrayDiffMode.cs" />
     <Compile Include="DiffOperation.cs" />
     <Compile Include="JsonDiffPatch.cs" />
+    <Compile Include="Lcs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="TextDiffMode.cs" />

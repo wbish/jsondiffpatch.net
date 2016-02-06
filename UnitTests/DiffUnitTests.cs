@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -138,12 +139,99 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
-		public void Diff_EfficientArrayDiff_Exception()
+		public void Diff_EfficientArrayDiffSame_NullDiff()
 		{
 			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
-			var array = JObject.Parse(@"{ ""p"": [] }");
+			var array = JToken.Parse(@"[1,2,3]");
 
-			Assert.Throws<NotImplementedException>(() => jdp.Diff(array, array));
+			JToken diff = jdp.Diff(array, array);
+
+            Assert.IsNull(diff);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffDifferentHeadRemoved_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3,4]");
+			var right = JToken.Parse(@"[2,3,4]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(2, diff.Properties().Count());
+			Assert.IsNotNull(diff["_0"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffDifferentTailRemoved_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3,4]");
+			var right = JToken.Parse(@"[1,2,3]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(2, diff.Properties().Count());
+			Assert.IsNotNull(diff["_3"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffDifferentHeadAdded_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3,4]");
+			var right = JToken.Parse(@"[0,1,2,3,4]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(2, diff.Properties().Count());
+			Assert.IsNotNull(diff["0"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffDifferentTailAdded_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3,4]");
+			var right = JToken.Parse(@"[1,2,3,4,5]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(2, diff.Properties().Count());
+			Assert.IsNotNull(diff["4"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffDifferentHeadTailAdded_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3,4]");
+			var right = JToken.Parse(@"[0,1,2,3,4,5]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(3, diff.Properties().Count());
+			Assert.IsNotNull(diff["0"]);
+			Assert.IsNotNull(diff["5"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffSameLengthNested_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,{""p"":false},4]");
+			var right = JToken.Parse(@"[1,2,{""p"":true},4]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(2, diff.Properties().Count());
+			Assert.IsNotNull(diff["2"]);
 		}
 
 		[Test]
