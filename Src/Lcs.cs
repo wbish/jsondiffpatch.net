@@ -65,8 +65,12 @@ namespace JsonDiffPatchDotNet
 				return new Lcs();
 			}
 
+			// If the JSON tokens at the same position are both Objects or both Arrays, we just say they 
+			// are the same even if they are not, because we can package smaller deltas than an entire 
+			// object or array replacement by doing object to object or array to array diff.
 			if (left[li - 1].Equals(right[ri - 1]) 
-				|| (left[li - 1].Type == JTokenType.Object && right[ri - 1].Type == JTokenType.Object))
+				|| (left[li - 1].Type == JTokenType.Object && right[ri - 1].Type == JTokenType.Object)
+				|| (left[li - 1].Type == JTokenType.Array && right[ri - 1].Type == JTokenType.Array))
 			{
 				var subsequence = Backtrack(matrix, left, right, li - 1, ri - 1);
 				subsequence.Sequence.Add(left[li - 1]);
