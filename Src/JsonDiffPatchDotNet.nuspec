@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
+    <id>JsonDiffPatch.Net</id>
     <version>$version$</version>
     <title>$title$</title>
     <authors>$author$</authors>
@@ -10,7 +10,6 @@
     <projectUrl>https://github.com/wbish/jsondiffpatch.net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright (c) 2016 William Bishop</copyright>
     <tags>json diff patch unpatch</tags>
   </metadata>
