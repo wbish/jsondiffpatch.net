@@ -129,12 +129,55 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
-		public void Patch_ArrayDiff_NotImplementedException()
+		public void Patch_ArrayPatchAdd_Success()
 		{
-			var jdp = new JsonDiffPatch();
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3]");
+			var right = JToken.Parse(@"[1,2,3,4]");
+			var patch = jdp.Diff(left, right);
 
-			Assert.Throws<NotImplementedException>(
-				() => jdp.Patch(JObject.Parse(@"{ ""p"": [] }"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }")));
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayPatchRemove_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3]");
+			var right = JToken.Parse(@"[1,2]");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayPatchModify_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,3,{""p"":false}]");
+			var right = JToken.Parse(@"[1,4,{""p"": [1] }]");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayPatcComplex_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"{""p"": [1,2,[1],false,""11111"",3,{""p"":false},10,10] }");
+			var right = JToken.Parse(@"{""p"": [1,2,[1,3],false,""11112"",3,{""p"":true},10,10] }");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
 		}
 	}
 }
