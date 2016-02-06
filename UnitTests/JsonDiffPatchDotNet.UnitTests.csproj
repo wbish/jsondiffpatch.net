@@ -64,6 +64,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiffMatchPatchTest.cs" />
     <Compile Include="DiffUnitTests.cs" />
     <Compile Include="PatchUnitTests.cs" />
     <Compile Include="UnpatchUnitTests.cs" />
