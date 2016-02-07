@@ -168,12 +168,25 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
-		public void Patch_ArrayPatcComplex_Success()
+		public void Patch_ArrayPatchComplex_Success()
 		{
 			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
 			var left = JToken.Parse(@"{""p"": [1,2,[1],false,""11111"",3,{""p"":false},10,10] }");
 			var right = JToken.Parse(@"{""p"": [1,2,[1,3],false,""11112"",3,{""p"":true},10,10] }");
 			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayPatchMoving_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[0,1,2,3,4,5,6,7,8,9,10]");
+			var right = JToken.Parse(@"[10,0,1,7,2,4,5,6,88,9,3]");
+			var patch = JToken.Parse(@"{ ""8"": [88], ""_t"": ""a"", ""_3"": ["""", 10, 3], ""_7"": ["""", 3, 3], ""_8"": [8, 0, 0], ""_10"": ["""", 0, 3] }");
 
 			var patched = jdp.Patch(left, patch);
 

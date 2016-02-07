@@ -93,7 +93,7 @@ namespace JsonDiffPatchDotNet
 					&& arrayDiffCanary.Value.Type == JTokenType.String
 					&& arrayDiffCanary.ToObject<string>() == "a")
 				{
-					return ArrayPatch((JArray) left, patchObj);
+					return ArrayPatch((JArray)left, patchObj);
 				}
 
 				return ObjectPatch(left as JObject, patchObj);
@@ -171,7 +171,7 @@ namespace JsonDiffPatchDotNet
 					&& arrayDiffCanary.Value.Type == JTokenType.String
 					&& arrayDiffCanary.ToObject<string>() == "a")
 				{
-					throw new NotImplementedException("Array Diff");
+					return ArrayUnpatch((JArray)right, patchObj);
 				}
 
 				return ObjectUnpatch(right as JObject, patchObj);
@@ -456,14 +456,12 @@ namespace JsonDiffPatchDotNet
 				if (op.Name.StartsWith("_"))
 				{
 					// removed item from original array
-					if (value != null && value.Count == 3 && (value[2].ToObject<int>() == 0 || value[2].ToObject<int>() == (int)DiffOperation.ArrayMove))
+					if (value != null && value.Count == 3 && (value[2].ToObject<int>() == (int)DiffOperation.Deleted || value[2].ToObject<int>() == (int)DiffOperation.ArrayMove))
 					{
-						var newOp = new JProperty(op.Name.Substring(1), op.Value);
-
-						toRemove.Add(newOp);
+						toRemove.Add(new JProperty(op.Name.Substring(1), op.Value));
 
 						if (value[2].ToObject<int>() == (int)DiffOperation.ArrayMove)
-							toInsert.Add(newOp);
+							toInsert.Add(new JProperty(value[1].ToObject<int>().ToString(), new JArray(left[int.Parse(op.Name.Substring(1))].DeepClone())));
 					}
 					else
 					{
@@ -493,9 +491,10 @@ namespace JsonDiffPatchDotNet
 			}
 
 			// insert items, in reverse order to avoid moving our own floor
-			toInsert.Sort((x, y) => int.Parse(x.Name).CompareTo(int.Parse(y.Name)));
-			foreach (var op in toInsert)
+			toInsert.Sort((x, y) => int.Parse(y.Name).CompareTo(int.Parse(x.Name)));
+			for (int i = toInsert.Count - 1; i >= 0; --i)
 			{
+				JProperty op = toInsert[i];
 				left.Insert(int.Parse(op.Name), ((JArray)op.Value)[0]);
 			}
 
@@ -504,7 +503,7 @@ namespace JsonDiffPatchDotNet
 				JToken p = Patch(left[int.Parse(op.Name)], op.Value);
 				left[int.Parse(op.Name)] = p;
 			}
-			
+
 			return left;
 		}
 
@@ -542,6 +541,79 @@ namespace JsonDiffPatchDotNet
 			}
 
 			return target;
+		}
+
+		private JArray ArrayUnpatch(JArray right, JObject patch)
+		{
+			var toRemove = new List<JProperty>();
+			var toInsert = new List<JProperty>();
+			var toModify = new List<JProperty>();
+
+			foreach (JProperty op in patch.Properties())
+			{
+				if (op.Name == "_t")
+					continue;
+
+				var value = op.Value as JArray;
+
+				if (op.Name.StartsWith("_"))
+				{
+					// removed item from original array
+					if (value != null && value.Count == 3 && (value[2].ToObject<int>() == (int)DiffOperation.Deleted || value[2].ToObject<int>() == (int)DiffOperation.ArrayMove))
+					{
+						var newOp = new JProperty(value[1].ToObject<int>().ToString(), op.Value);
+
+						if (value[2].ToObject<int>() == (int)DiffOperation.ArrayMove)
+						{
+							toInsert.Add(new JProperty(op.Name.Substring(1), new JArray(right[value[1].ToObject<int>()].DeepClone())));
+							toRemove.Add(newOp);
+						}
+						else
+						{
+							toInsert.Add(new JProperty(op.Name.Substring(1), new JArray(value[0])));
+						}
+					}
+					else
+					{
+						throw new Exception($"Only removal or move can be applied at original array indices. Context: {value}");
+					}
+				}
+				else
+				{
+					if (value != null && value.Count == 1)
+					{
+						toRemove.Add(op);
+					}
+					else
+					{
+						toModify.Add(op);
+					}
+				}
+			}
+
+
+			// remove items, in reverse order to avoid sawing our own floor
+			toRemove.Sort((x, y) => int.Parse(x.Name).CompareTo(int.Parse(y.Name)));
+			for (int i = toRemove.Count - 1; i >= 0; --i)
+			{
+				JProperty op = toRemove[i];
+				right.RemoveAt(int.Parse(op.Name));
+			}
+
+			// insert items, in reverse order to avoid moving our own floor
+			toInsert.Sort((x, y) => int.Parse(x.Name).CompareTo(int.Parse(y.Name)));
+			foreach (var op in toInsert)
+			{
+				right.Insert(int.Parse(op.Name), ((JArray)op.Value)[0]);
+			}
+
+			foreach (var op in toModify)
+			{
+				JToken p = Unpatch(right[int.Parse(op.Name)], op.Value);
+				right[int.Parse(op.Name)] = p;
+			}
+
+			return right;
 		}
 	}
 }

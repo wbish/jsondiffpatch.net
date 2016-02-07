@@ -90,12 +90,68 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
-		public void Unpatch_ArrayDiff_NotImplementedException()
+		public void Patch_ArrayUnpatchAdd_Success()
 		{
-			var jdp = new JsonDiffPatch();
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3]");
+			var right = JToken.Parse(@"[1,2,3,4]");
+			var patch = jdp.Diff(left, right);
 
-			Assert.Throws<NotImplementedException>(
-				() => jdp.Unpatch(JObject.Parse(@"{ ""p"": [] }"), JObject.Parse(@"{ ""p"" : { ""_t"" : ""a""} }")));
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.AreEqual(left.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayUnpatchRemove_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,2,3]");
+			var right = JToken.Parse(@"[1,2]");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.AreEqual(left.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayUnpatchModify_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[1,3,{""p"":false}]");
+			var right = JToken.Parse(@"[1,4,{""p"": [1] }]");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.AreEqual(left.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayUnpatchComplex_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"{""p"": [1,2,[1],false,""11111"",3,{""p"":false},10,10] }");
+			var right = JToken.Parse(@"{""p"": [1,2,[1,3],false,""11112"",3,{""p"":true},10,10] }");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.AreEqual(left.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayUnpatchMoving_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[0,1,2,3,4,5,6,7,8,9,10]");
+			var right = JToken.Parse(@"[10,0,1,7,2,4,5,6,88,9,3]");
+			var patch = JToken.Parse(@"{ ""8"": [88], ""_t"": ""a"", ""_3"": ["""", 10, 3], ""_7"": ["""", 3, 3], ""_8"": [8, 0, 0], ""_10"": ["""", 0, 3] }");
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.AreEqual(left.ToString(), patched.ToString());
 		}
 	}
 }
