@@ -192,5 +192,31 @@ namespace JsonDiffPatchDotNet.UnitTests
 
 			Assert.AreEqual(right.ToString(), patched.ToString());
 		}
+
+		[Test]
+		public void Patch_ArrayPatchMovingNonConsecutive_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[0,1,3,4,5]");
+			var right = JToken.Parse(@"[0,4,3,1,5]");
+			var patch = JToken.Parse(@"{""_t"": ""a"", ""_2"": ["""", 2, 3],""_3"": ["""", 1, 3]}");
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Patch_ArrayPatchMoveDeletingNonConsecutive_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[0,1,3,4,5]");
+			var right = JToken.Parse(@"[0,5,3]");
+			var patch = JToken.Parse(@"{""_t"": ""a"", ""_1"": [ 1, 0, 0], ""_3"": [4,0, 0],""_4"": [ """", 1, 3 ]}");
+
+			var patched = jdp.Patch(left, patch);
+
+			Assert.AreEqual(right.ToString(), patched.ToString());
+		}
 	}
 }

@@ -154,7 +154,6 @@ namespace JsonDiffPatchDotNet
 		/// <param name="patch">JSON Patch Document</param>
 		/// <returns>Unpatched JSON object</returns>
 		/// <exception cref="System.IO.InvalidDataException">Thrown if the patch document is invalid</exception>
-		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
 		public JToken Unpatch(JToken right, JToken patch)
 		{
 			if (patch == null)
@@ -262,7 +261,6 @@ namespace JsonDiffPatchDotNet
 		/// <param name="patch">JSON Patch Document</param>
 		/// <returns>Unpatched JSON object</returns>
 		/// <exception cref="System.IO.InvalidDataException">Thrown if the patch document is invalid</exception>
-		/// <exception cref="System.NotImplementedException">Thrown if patch document contains an array diff</exception>
 		public string Unpatch(string right, string patch)
 		{
 			JToken unpatchedObj = Unpatch(JToken.Parse(right ?? ""), JToken.Parse(patch ?? ""));
