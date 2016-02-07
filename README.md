@@ -68,7 +68,7 @@ Patch a left object with a patch document
 
 ## Installing
 
-Install from [jsondiffpatch](https://www.nuget.org/packages/JsonDiffPatch.Net/) nuget website, or run the following command:
+Install from [jsondiffpatch.net](https://www.nuget.org/packages/JsonDiffPatch.Net/) nuget website, or run the following command:
 
 ``` PowerShell
 nuget.exe install JsonDiffPatch.Net
