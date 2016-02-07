@@ -3,13 +3,11 @@
 [![Build Status](https://secure.travis-ci.org/wbish/jsondiffpatch.net.svg)](http://travis-ci.org/wbish/jsondiffpatch.net)
 [![Coverage Status](https://coveralls.io/repos/github/wbish/jsondiffpatch.net/badge.svg?branch=master)](https://coveralls.io/github/wbish/jsondiffpatch.net?branch=master)
 
-Json object diffs and patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
+JSON object diffs and reversible patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
 
 ## Usage
 
 The full JSON patch document format is documented at https://github.com/benjamine/jsondiffpatch. 
-
-Note: Efficient array diff is currently NYI.
 
 ### Diff
 
@@ -69,7 +67,12 @@ Patch a left object with a patch document
 ```
 
 ## Installing
-nuget install jsondiffpatchdotnet
+
+Install from [jsondiffpatch](https://www.nuget.org/packages/JsonDiffPatch.Net/) nuget website, or run the following command:
+
+``` PowerShell
+nuget.exe install JsonDiffPatch.Net
+````
 
 ## Attributions
 * [jsondiffpatch](https://github.com/benjamine/jsondiffpatch)
