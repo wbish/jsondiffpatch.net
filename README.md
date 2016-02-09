@@ -2,6 +2,8 @@
 <!--- badges -->
 [![Build Status](https://secure.travis-ci.org/wbish/jsondiffpatch.net.svg)](http://travis-ci.org/wbish/jsondiffpatch.net)
 [![Coverage Status](https://coveralls.io/repos/github/wbish/jsondiffpatch.net/badge.svg?branch=master)](https://coveralls.io/github/wbish/jsondiffpatch.net?branch=master)
+[![NuGet](https://img.shields.io/nuget/dt/JsonDiffPatch.Net.svg)](https://www.nuget.org/packages/JsonDiffPatch.Net/)
+[![NuGet](https://img.shields.io/nuget/v/JsonDiffPatch.Net.svg)](https://www.nuget.org/packages/JsonDiffPatch.Net/)
 
 JSON object diffs and reversible patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
 
@@ -49,6 +51,8 @@ Patch a left object with a patch document
 ```
 
 ### Unpatch
+
+Unpatch a right object with a patch document
 
 ``` C#
   var jdp = new JsonDiffPatch();
