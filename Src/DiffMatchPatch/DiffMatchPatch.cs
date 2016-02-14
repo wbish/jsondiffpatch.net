@@ -22,9 +22,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 
 namespace DiffMatchPatch
 {
@@ -198,8 +198,7 @@ namespace DiffMatchPatch
 						break;
 				}
 
-				text.Append(HttpUtility.UrlEncode(aDiff.text,
-					new UTF8Encoding()).Replace('+', ' ')).Append("\n");
+				text.Append(diff_match_patch.UrlEncode(aDiff.text).Replace('+', ' ')).Append("\n");
 			}
 
 			return diff_match_patch.unescapeForEncodeUriCompatability(
@@ -1661,8 +1660,7 @@ namespace DiffMatchPatch
 				switch (aDiff.operation)
 				{
 					case Operation.INSERT:
-						text.Append("+").Append(HttpUtility.UrlEncode(aDiff.text,
-							new UTF8Encoding()).Replace('+', ' ')).Append("\t");
+						text.Append("+").Append(UrlEncode(aDiff.text).Replace('+', ' ')).Append("\t");
 						break;
 					case Operation.DELETE:
 						text.Append("-").Append(aDiff.text.Length).Append("\t");
@@ -1712,7 +1710,7 @@ namespace DiffMatchPatch
 						// decode would change all "+" to " "
 						param = param.Replace("+", "%2b");
 
-						param = HttpUtility.UrlDecode(param, new UTF8Encoding(false, true));
+						param = UrlDecode(param);
 						//} catch (UnsupportedEncodingException e) {
 						//  // Not likely on modern system.
 						//  throw new Error("This system does not support UTF-8.", e);
@@ -2636,7 +2634,7 @@ namespace DiffMatchPatch
 					}
 					line = text[textPointer].Substring(1);
 					line = line.Replace("+", "%2b");
-					line = HttpUtility.UrlDecode(line, new UTF8Encoding(false, true));
+					line = UrlDecode(line);
 					if (sign == '-')
 					{
 						// Deletion.
@@ -2690,6 +2688,17 @@ namespace DiffMatchPatch
 				.Replace("%3a", ":").Replace("%40", "@").Replace("%26", "&")
 				.Replace("%3d", "=").Replace("%2b", "+").Replace("%24", "$")
 				.Replace("%2c", ",").Replace("%23", "#");
+		}
+
+		internal static string UrlEncode(string str)
+		{
+			str = WebUtility.UrlEncode(str);
+			return Regex.Replace(str, "(%[0-9A-F]{2})", encodedChar => encodedChar.Value.ToLowerInvariant());
+		}
+
+		internal static string UrlDecode(string str)
+		{
+			return WebUtility.UrlDecode(str);
 		}
 	}
 }

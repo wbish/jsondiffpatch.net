@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDiffPatchDotNet", "Src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDiffPatchDotNet.UnitTests", "UnitTests\JsonDiffPatchDotNet.UnitTests.csproj", "{619EA3C5-4AED-4220-8397-1024A2358CEC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDiffPatchDotNet.Portable45", "Src\JsonDiffPatchDotNet.Portable45.csproj", "{A3B7E204-2CB7-4402-9FE5-072AEB9E5AB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B7E204-2CB7-4402-9FE5-072AEB9E5AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B7E204-2CB7-4402-9FE5-072AEB9E5AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B7E204-2CB7-4402-9FE5-072AEB9E5AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B7E204-2CB7-4402-9FE5-072AEB9E5AB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
