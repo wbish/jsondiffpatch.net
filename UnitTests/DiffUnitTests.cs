@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -39,9 +38,9 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var right = JObject.Parse(@"{""p"": false }");
 
 			JToken result = jdp.Diff(left, right);
-			
+
 			Assert.AreEqual(JTokenType.Object, result.Type);
-			JObject obj = (JObject) result;
+			JObject obj = (JObject)result;
 			Assert.IsNotNull(obj.Property("p"), "Property Name");
 			Assert.AreEqual(JTokenType.Array, obj.Property("p").Value.Type, "Array Value");
 			Assert.AreEqual(2, ((JArray)obj.Property("p").Value).Count, "Array Length");
@@ -141,12 +140,12 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Diff_EfficientArrayDiffSame_NullDiff()
 		{
-			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
 			var array = JToken.Parse(@"[1,2,3]");
 
 			JToken diff = jdp.Diff(array, array);
 
-            Assert.IsNull(diff);
+			Assert.IsNull(diff);
 		}
 
 		[Test]
@@ -232,6 +231,27 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(diff);
 			Assert.AreEqual(2, diff.Properties().Count());
 			Assert.IsNotNull(diff["2"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffSameWithObject_NoDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"
+{
+	""@context"": [
+		""http://www.w3.org/ns/csvw"",
+		{
+			""@language"": ""en"",
+			""@base"": ""http://example.org""
+		}
+	]
+}");
+			var right = left.DeepClone();
+
+			JToken diff = jdp.Diff(left, right);
+
+			Assert.IsNull(diff);
 		}
 
 		[Test]

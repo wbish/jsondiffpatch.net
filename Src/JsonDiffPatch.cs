@@ -64,7 +64,7 @@ namespace JsonDiffPatchDotNet
 					: null;
 			}
 
-			if (!left.Equals(right))
+			if (!JToken.DeepEquals(left, right))
 				return new JArray(left, right);
 
 			return null;
@@ -319,10 +319,13 @@ namespace JsonDiffPatchDotNet
 			int commonHead = 0;
 			int commonTail = 0;
 
+			if (JToken.DeepEquals(left, right))
+				return null;
+
 			// Find common head
-			while (commonHead < left.Count
+			while (commonHead < left.Count()
 				&& commonHead < right.Count()
-				&& left[commonHead].Equals(right[commonHead]))
+				&& JToken.DeepEquals(left[commonHead], right[commonHead]))
 			{
 				commonHead++;
 			}
@@ -330,19 +333,13 @@ namespace JsonDiffPatchDotNet
 			// Find common tail
 			while (commonTail + commonHead < left.Count()
 				&& commonTail + commonHead < right.Count()
-				&& left[left.Count() - 1 - commonTail].Equals(right[right.Count() - 1 - commonTail]))
+				&& JToken.DeepEquals(left[left.Count() - 1 - commonTail], right[right.Count() - 1 - commonTail]))
 			{
 				commonTail++;
 			}
 
 			if (commonHead + commonTail == left.Count())
 			{
-				if (left.Count() == right.Count())
-				{
-					// Arrays are identical
-					return null;
-				}
-
 				// Trivial case, a block (1 or more consecutive items) was added
 				for (int index = commonHead; index < right.Count() - commonTail; ++index)
 				{

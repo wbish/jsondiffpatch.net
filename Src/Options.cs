@@ -4,7 +4,7 @@
 	{
 		public Options()
 		{
-			ArrayDiff = ArrayDiffMode.Simple;
+			ArrayDiff = ArrayDiffMode.Efficient;
 			TextDiff = TextDiffMode.Efficient;
 			MinEfficientTextDiffLength = 50;
 		}
