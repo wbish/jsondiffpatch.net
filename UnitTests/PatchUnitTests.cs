@@ -72,6 +72,23 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
+		public void Patch_ObjectApplyEditTextEfficient_Success()
+		{
+			var options = new Options { MinEfficientTextDiffLength = 1, TextDiff = TextDiffMode.Efficient };
+			var jdp = new JsonDiffPatch(options);
+			var left = JObject.Parse(@"{ ""p"" : ""The quick brown fox jumps over the lazy dog."" }");
+			var right = JObject.Parse(@"{ ""p"" : ""That quick brown fox jumped over a lazy dog."" }");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Patch(left, patch) as JObject;
+
+			Assert.IsNotNull(patched, "Patched object");
+			Assert.AreEqual(1, patched.Properties().Count(), "Property");
+			Assert.AreEqual(JTokenType.String, patched.Property("p").Value.Type, "String Type");
+			Assert.AreEqual("That quick brown fox jumped over a lazy dog.", patched.Property("p").Value.ToString(), "String value");
+		}
+
+		[Test]
 		public void Patch_NestedObjectApplyEdit_Success()
 		{
 			var jdp = new JsonDiffPatch();

@@ -124,13 +124,21 @@ namespace JsonDiffPatchDotNet
 					}
 					else if (op == 2)
 					{
+						if (left.Type != JTokenType.String)
+							throw new InvalidDataException("Invalid patch object");
+
 						var dmp = new diff_match_patch();
 						List<Patch> patches = dmp.patch_fromText(patchArray[0].ToObject<string>());
 
-						if (patches.Count != 1)
+						if (!patches.Any())
 							throw new InvalidDataException("Invalid textline");
 
-						string right = dmp.diff_text2(patches[0].diffs);
+						object[] result = dmp.patch_apply(patches, left.Value<string>());
+						var patchResults = (bool[])result[1];
+						if (patchResults.Any(x => !x))
+							throw new InvalidDataException("Text patch failed");
+
+						string right = (string)result[0];
 						return right;
 					}
 					else
@@ -201,13 +209,43 @@ namespace JsonDiffPatchDotNet
 					}
 					else if (op == 2)
 					{
+						if (right.Type != JTokenType.String)
+							throw new InvalidDataException("Invalid patch object");
+
 						var dmp = new diff_match_patch();
 						List<Patch> patches = dmp.patch_fromText(patchArray[0].ToObject<string>());
 
-						if (patches.Count != 1)
+						if (!patches.Any())
 							throw new InvalidDataException("Invalid textline");
 
-						string left = dmp.diff_text1(patches[0].diffs);
+						var unpatches = new List<Patch>();
+						foreach (Patch p in patches)
+						{
+							var u = new Patch();
+							foreach (Diff d in p.diffs)
+							{
+								if (d.operation == Operation.DELETE)
+								{
+									u.diffs.Add(new Diff(Operation.INSERT, d.text));
+								}
+								else if (d.operation == Operation.INSERT)
+								{
+									u.diffs.Add(new Diff(Operation.DELETE, d.text));
+								}
+								else
+								{
+									u.diffs.Add(d);
+								}
+							}
+							unpatches.Add(u);
+						}
+
+						object[] result = dmp.patch_apply(unpatches, right.Value<string>());
+						var unpatchResults = (bool[])result[1];
+						if (unpatchResults.Any(x => !x))
+							throw new InvalidDataException("Text patch failed");
+
+						string left = (string)result[0];
 						return left;
 					}
 					else

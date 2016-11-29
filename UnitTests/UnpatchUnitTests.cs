@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -69,6 +68,23 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(1, unpatched.Properties().Count(), "Property");
 			Assert.AreEqual(JTokenType.String, unpatched.Property("p").Value.Type, "String Type");
 			Assert.AreEqual(value, unpatched.Property("p").Value.ToObject<string>(), "String value");
+		}
+
+		[Test]
+		public void Unpatch_ObjectApplyEditTextEfficient_Success()
+		{
+			var options = new Options { MinEfficientTextDiffLength = 1, TextDiff = TextDiffMode.Efficient };
+			var jdp = new JsonDiffPatch(options);
+			var left = JObject.Parse(@"{ ""p"" : ""The quick brown fox jumps over the lazy dog."" }");
+			var right = JObject.Parse(@"{ ""p"" : ""That quick brown fox jumped over a lazy dog."" }");
+			var patch = jdp.Diff(left, right);
+
+			var unpatched = jdp.Unpatch(right, patch) as JObject;
+
+			Assert.IsNotNull(unpatched, "Patched object");
+			Assert.AreEqual(1, unpatched.Properties().Count(), "Property");
+			Assert.AreEqual(JTokenType.String, unpatched.Property("p").Value.Type, "String Type");
+			Assert.AreEqual("The quick brown fox jumps over the lazy dog.", unpatched.Property("p").Value.ToString(), "String value");
 		}
 
 		[Test]
