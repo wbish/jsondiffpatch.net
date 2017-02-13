@@ -3,14 +3,24 @@
   <metadata>
     <id>JsonDiffPatch.Net</id>
     <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <title>JsonDiffPatch.Net</title>
+    <authors>William Bishop</authors>
+    <owners>William Bishop</owners>
     <licenseUrl>https://github.com/wbish/jsondiffpatch.net/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/wbish/jsondiffpatch.net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>JSON object diffs and reversible patching (jsondiffpatch compatible)</description>
     <copyright>Copyright (c) 2016 William Bishop</copyright>
     <tags>json diff patch unpatch</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="8.0.2" />
+    </dependencies>
   </metadata>
+  <files>
+    <file src="bin\Release\net45\JsonDiffPatchDotNet.dll" target="lib\net45\JsonDiffPatchDotNet.dll" />
+    <file src="bin\Release\net45\JsonDiffPatchDotNet.pdb" target="lib\net45\JsonDiffPatchDotNet.pdb" />
+    <file src="bin\Release\Portable45\JsonDiffPatchDotNet.dll" target="lib\portable-net45+win+WindowsPhoneApp81+wp80\JsonDiffPatchDotNet.dll" />
+    <file src="bin\Release\Portable45\JsonDiffPatchDotNet.pdb" target="lib\portable-net45+win+WindowsPhoneApp81+wp80\JsonDiffPatchDotNet.pdb" />
+  </files>
+
 </package>
