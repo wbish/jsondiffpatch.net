@@ -151,7 +151,7 @@ var output = jdp.Diff(left, right);
 Install from [jsondiffpatch.net](https://www.nuget.org/packages/JsonDiffPatch.Net/) nuget website, or run the following command:
 
 ``` PowerShell
-nuget.exe install JsonDiffPatch.Net
+Install-Package JsonDiffPatch.Net
 ````
 
 ## Attributions
