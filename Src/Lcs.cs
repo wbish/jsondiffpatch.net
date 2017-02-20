@@ -58,35 +58,37 @@ namespace JsonDiffPatchDotNet
 			return arr;
 		}
 
-		private static Lcs Backtrack(int[,] matrix, List<JToken> left, List<JToken> right, int li, int ri)
-		{
-			if (li == 0 || ri == 0)
-			{
-				return new Lcs();
-			}
+        private static Lcs Backtrack(int[,] matrix, List<JToken> left, List<JToken> right, int li, int ri)
+        {
+            var result = new Lcs();
+            for (int i = li, j = ri; i > 0 && j > 0;)
+            {
+                // If the JSON tokens at the same position are both Objects or both Arrays, we just say they 
+                // are the same even if they are not, because we can package smaller deltas than an entire 
+                // object or array replacement by doing object to object or array to array diff.
+                if (left[i - 1].Equals(right[j - 1])
+                || (left[i - 1].Type == JTokenType.Object && right[j - 1].Type == JTokenType.Object)
+                || (left[i - 1].Type == JTokenType.Array && right[j - 1].Type == JTokenType.Array))
+                {
+                    result.Sequence.Insert(0, left[i - 1]);
+                    result.Indices1.Insert(0, i - 1);
+                    result.Indices2.Insert(0, j - 1);
+                    i--;
+                    j--;
+                    continue;
+                }
 
-			// If the JSON tokens at the same position are both Objects or both Arrays, we just say they 
-			// are the same even if they are not, because we can package smaller deltas than an entire 
-			// object or array replacement by doing object to object or array to array diff.
-			if (left[li - 1].Equals(right[ri - 1]) 
-				|| (left[li - 1].Type == JTokenType.Object && right[ri - 1].Type == JTokenType.Object)
-				|| (left[li - 1].Type == JTokenType.Array && right[ri - 1].Type == JTokenType.Array))
-			{
-				var subsequence = Backtrack(matrix, left, right, li - 1, ri - 1);
-				subsequence.Sequence.Add(left[li - 1]);
-				subsequence.Indices1.Add(li - 1);
-				subsequence.Indices2.Add(ri - 1);
-				return subsequence;
-			}
+                if (matrix[i, j - 1] > matrix[i - 1, j])
+                {
+                    j--;
+                }
+                else
+                {
+                    i--;
+                }
+            }
 
-			if (matrix[li, ri - 1] > matrix[li - 1, ri])
-			{
-				return Backtrack(matrix, left, right, li, ri - 1);
-			}
-			else
-			{
-				return Backtrack(matrix, left, right, li - 1, ri);
-			}
-		}
-	}
+            return result;
+        }
+    }
 }
