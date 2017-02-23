@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -254,7 +257,36 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNull(diff);
 		}
 
-		[Test]
+        [Test]
+        public void Diff_EfficientArrayDiffHugeArrays_NoStackOverflow()
+        {
+            const int ARRAY_SIZE = 1000;
+            Func<int, int, JToken> hugeArrayFunc = (startIndex, count) =>
+            {
+                var builder = new StringBuilder("[");
+                foreach (var i in Enumerable.Range(startIndex, count))
+                {
+                    builder.Append($"{i},");
+                }
+                builder.Append("]");
+
+                return JToken.Parse(builder.ToString());
+            };
+
+            var jdp = new JsonDiffPatch();
+            var left = hugeArrayFunc(0, ARRAY_SIZE);
+            var right = hugeArrayFunc(ARRAY_SIZE / 2, ARRAY_SIZE);
+
+            JToken diff = null;
+            var thread = new Thread(() => diff = jdp.Diff(left, right), 128 * 2014);
+            thread.Start();
+            thread.Join();
+
+            var restored = jdp.Patch(left, diff);
+            Assert.That(JToken.DeepEquals(restored, right));
+        }
+
+        [Test]
 		public void Diff_IntStringDiff_ValidPatch()
 		{
 			var jdp = new JsonDiffPatch();
@@ -269,5 +301,5 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(left, array[0]);
 			Assert.AreEqual(right, array[1]);
 		}
-	}
+    }
 }
