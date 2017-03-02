@@ -91,7 +91,7 @@ namespace JsonDiffPatchDotNet
 					&& left.Type == JTokenType.Array
 					&& arrayDiffCanary != null
 					&& arrayDiffCanary.Value.Type == JTokenType.String
-					&& arrayDiffCanary.ToObject<string>() == "a")
+					&& arrayDiffCanary.Value.ToObject<string>() == "a")
 				{
 					return ArrayPatch((JArray)left, patchObj);
 				}
@@ -176,7 +176,7 @@ namespace JsonDiffPatchDotNet
 					&& right.Type == JTokenType.Array
 					&& arrayDiffCanary != null
 					&& arrayDiffCanary.Value.Type == JTokenType.String
-					&& arrayDiffCanary.ToObject<string>() == "a")
+					&& arrayDiffCanary.Value.ToObject<string>() == "a")
 				{
 					return ArrayUnpatch((JArray)right, patchObj);
 				}
