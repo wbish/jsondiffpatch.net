@@ -7,7 +7,7 @@
     <RootNamespace>JsonDiffPatchDotNet</RootNamespace>
     <AssemblyName>JsonDiffPatchDotNet</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <SignAssembly>False</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyFile>JsonDiffPatchDotNet.snk</AssemblyOriginatorKeyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
