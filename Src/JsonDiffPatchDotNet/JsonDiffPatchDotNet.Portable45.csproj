@@ -18,8 +18,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Portable45\</OutputPath>
-	<IntermediateOutputPath>obj\Debug\Portable45\</IntermediateOutputPath>
+    <OutputPath>bin\Debug\portable-net45+win8+wpa81+wp8\</OutputPath>
+	<IntermediateOutputPath>obj\Debug\portable-net45+win8+wpa81+wp8\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PORTABLE45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,8 +27,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Portable45\</OutputPath>
-	<IntermediateOutputPath>obj\Release\Portable45\</IntermediateOutputPath>
+    <OutputPath>bin\Release\portable-net45+win8+wpa81+wp8\</OutputPath>
+	<IntermediateOutputPath>obj\Release\portable-net45+win8+wpa81+wp8\</IntermediateOutputPath>
     <DefineConstants>TRACE;PORTABLE45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,8 +40,8 @@
     <AssemblyOriginatorKeyFile>JsonDiffPatchDotNet.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
