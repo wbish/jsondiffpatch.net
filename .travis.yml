@@ -1,8 +1,8 @@
 language: csharp
 mono: 4.2.2
-solution: JsonDiffPatchDotNet.sln
+solution: Src/JsonDiffPatchDotNet.sln
 install:
-  - nuget restore JsonDiffPatchDotNet.sln
+  - nuget restore Src/JsonDiffPatchDotNet.sln
   - nuget install NUnit.Runners -Version 3.0.1 -OutputDirectory testrunner
   - nuget install coveralls.net -Version 0.6.0 -OutputDirectory coveralls
   - sudo apt-get install gtk-sharp2
@@ -18,9 +18,9 @@ install:
   - sudo make install
   - cd ../../wbish/jsondiffpatch.net
 script:
-  - xbuild /p:Configuration=Release JsonDiffPatchDotNet.sln
+  - xbuild /p:Configuration=Release Src/JsonDiffPatchDotNet.sln
   - export LD_LIBRARY_PATH=/usr/local/lib
-  - mono --debug --profile=monocov:outfile=monocovCoverage.cov,+[JsonDiffPatchDotNet] ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe --process=Single ./UnitTests/bin/Release/JsonDiffPatchDotNet.UnitTests.dll
+  - mono --debug --profile=monocov:outfile=monocovCoverage.cov,+[JsonDiffPatchDotNet] ./testrunner/NUnit.Console.3.0.1/tools/nunit3-console.exe --process=Single ./Src/JsonDiffPatchDotNet.UnitTests/bin/Release/JsonDiffPatchDotNet.UnitTests.dll
   - monocov --export-xml=monocovCoverage monocovCoverage.cov
   - REPO_COMMIT_AUTHOR=$(git show -s --pretty=format:"%cn")
   - REPO_COMMIT_AUTHOR_EMAIL=$(git show -s --pretty=format:"%ce")
