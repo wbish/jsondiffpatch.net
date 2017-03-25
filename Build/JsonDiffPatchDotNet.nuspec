@@ -10,7 +10,7 @@
         <projectUrl>https://github.com/wbish/jsondiffpatch.net</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>JSON object diffs and reversible patching (jsondiffpatch compatible)</description>
-        <copyright>Copyright (c) 2016 William Bishop</copyright>
+        <copyright>Copyright (c) 2017 William Bishop</copyright>
         <tags>json diff patch unpatch</tags>
         <dependencies>
             <dependency id="Newtonsoft.Json" version="9.0.1" />
