@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonDiffPatchDotNet.Roslyn", "JsonDiffPatchDotNet\JsonDiffPatchDotNet.Roslyn.csproj", "{50825AC2-B521-47D9-9A68-DF6689DF61CC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonDiffPatchDotNet.UnitTests.Roslyn", "JsonDiffPatchDotNet.UnitTests\JsonDiffPatchDotNet.UnitTests.Roslyn.csproj", "{A1872054-FB38-422B-A831-D2E530F5C9CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1872054-FB38-422B-A831-D2E530F5C9CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1872054-FB38-422B-A831-D2E530F5C9CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1872054-FB38-422B-A831-D2E530F5C9CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1872054-FB38-422B-A831-D2E530F5C9CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
