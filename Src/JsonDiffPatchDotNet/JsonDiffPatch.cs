@@ -18,7 +18,12 @@ namespace JsonDiffPatchDotNet
 
 		public JsonDiffPatch(Options options)
 		{
-			_options = options ?? throw new ArgumentNullException(nameof(options));
+			if (options == null)
+			{
+				throw new ArgumentNullException(nameof(options));
+			}
+
+			_options = options;
 		}
 
 		/// <summary>
