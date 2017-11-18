@@ -57,7 +57,8 @@ namespace JsonDiffPatchDotNet.UnitTests
 		public void Unpatch_ObjectApplyEditText_Success()
 		{
 			var jdp = new JsonDiffPatch();
-			const string value = @"bla1h111111111111112312weldjidjoijfoiewjfoiefjefijfoejoijfiwoejfiewjfiwejfowjwifewjfejdewdwdewqwertyqwertifwiejifoiwfei";
+			const string value =
+				@"bla1h111111111111112312weldjidjoijfoiewjfoiefjefijfoejoijfiwoejfiewjfiwejfowjwifewjfejdewdwdewqwertyqwertifwiejifoiwfei";
 			var left = JObject.Parse(@"{ ""p"" : """ + value + @""" }");
 			var right = JObject.Parse(@"{ ""p"" : ""blah1"" }");
 			var patch = jdp.Diff(left, right);
@@ -73,7 +74,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ObjectApplyEditTextEfficient_Success()
 		{
-			var options = new Options { MinEfficientTextDiffLength = 1, TextDiff = TextDiffMode.Efficient };
+			var options = new Options {MinEfficientTextDiffLength = 1, TextDiff = TextDiffMode.Efficient};
 			var jdp = new JsonDiffPatch(options);
 			var left = JObject.Parse(@"{ ""p"" : ""The quick brown fox jumps over the lazy dog."" }");
 			var right = JObject.Parse(@"{ ""p"" : ""That quick brown fox jumped over a lazy dog."" }");
@@ -84,7 +85,8 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(unpatched, "Patched object");
 			Assert.AreEqual(1, unpatched.Properties().Count(), "Property");
 			Assert.AreEqual(JTokenType.String, unpatched.Property("p").Value.Type, "String Type");
-			Assert.AreEqual("The quick brown fox jumps over the lazy dog.", unpatched.Property("p").Value.ToString(), "String value");
+			Assert.AreEqual("The quick brown fox jumps over the lazy dog.", unpatched.Property("p").Value.ToString(),
+				"String value");
 		}
 
 		[Test]
@@ -100,15 +102,15 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(patched, "Patched object");
 			Assert.AreEqual(1, patched.Properties().Count(), "Property");
 			Assert.AreEqual(JTokenType.Object, patched.Property("i").Value.Type);
-			Assert.AreEqual(1, ((JObject)patched.Property("i").Value).Properties().Count());
-			Assert.AreEqual(JTokenType.Boolean, ((JObject)patched.Property("i").Value).Property("p").Value.Type);
-			Assert.IsFalse(((JObject)patched.Property("i").Value).Property("p").Value.ToObject<bool>());
+			Assert.AreEqual(1, ((JObject) patched.Property("i").Value).Properties().Count());
+			Assert.AreEqual(JTokenType.Boolean, ((JObject) patched.Property("i").Value).Property("p").Value.Type);
+			Assert.IsFalse(((JObject) patched.Property("i").Value).Property("p").Value.ToObject<bool>());
 		}
 
 		[Test]
 		public void Unpatch_ArrayUnpatchAdd_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"[1,2,3]");
 			var right = JToken.Parse(@"[1,2,3,4]");
 			var patch = jdp.Diff(left, right);
@@ -121,7 +123,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ArrayUnpatchRemove_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"[1,2,3]");
 			var right = JToken.Parse(@"[1,2]");
 			var patch = jdp.Diff(left, right);
@@ -134,7 +136,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ArrayUnpatchModify_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"[1,3,{""p"":false}]");
 			var right = JToken.Parse(@"[1,4,{""p"": [1] }]");
 			var patch = jdp.Diff(left, right);
@@ -147,7 +149,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ArrayUnpatchComplex_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"{""p"": [1,2,[1],false,""11111"",3,{""p"":false},10,10] }");
 			var right = JToken.Parse(@"{""p"": [1,2,[1,3],false,""11112"",3,{""p"":true},10,10] }");
 			var patch = jdp.Diff(left, right);
@@ -160,10 +162,12 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ArrayUnpatchMoving_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"[0,1,2,3,4,5,6,7,8,9,10]");
 			var right = JToken.Parse(@"[10,0,1,7,2,4,5,6,88,9,3]");
-			var patch = JToken.Parse(@"{ ""8"": [88], ""_t"": ""a"", ""_3"": ["""", 10, 3], ""_7"": ["""", 3, 3], ""_8"": [8, 0, 0], ""_10"": ["""", 0, 3] }");
+			var patch =
+				JToken.Parse(
+					@"{ ""8"": [88], ""_t"": ""a"", ""_3"": ["""", 10, 3], ""_7"": ["""", 3, 3], ""_8"": [8, 0, 0], ""_10"": ["""", 0, 3] }");
 
 			var patched = jdp.Unpatch(right, patch);
 
@@ -173,7 +177,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ArrayPatchMovingNonConsecutive_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"[0,1,3,4,5]");
 			var right = JToken.Parse(@"[0,4,3,1,5]");
 			var patch = JToken.Parse(@"{""_t"": ""a"", ""_2"": ["""", 2, 3],""_3"": ["""", 1, 3]}");
@@ -186,7 +190,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Unpatch_ArrayPatchMoveDeletingNonConsecutive_Success()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options {ArrayDiff = ArrayDiffMode.Efficient});
 			var left = JToken.Parse(@"[0,1,3,4,5]");
 			var right = JToken.Parse(@"[0,5,3]");
 			var patch = JToken.Parse(@"{""_t"": ""a"", ""_1"": [ 1, 0, 0], ""_3"": [4,0, 0],""_4"": [ """", 1, 3 ]}");
@@ -194,6 +198,32 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var patched = jdp.Unpatch(right, patch);
 
 			Assert.AreEqual(left.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Unpatch_Bug16Exception_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse("{\r\n  \"rootRegion\": {\r\n    \"rows\": [\r\n      \"auto\"\r\n    ],\r\n    \"members\": [\r\n      {\r\n        \"row\": 2\r\n      }\r\n    ]\r\n  }\r\n}");
+			var right = JToken.Parse("{\r\n  \"rootRegion\": {\r\n    \"rows\": [\r\n      \"auto\",\r\n      \"auto\"\r\n    ],\r\n    \"members\": [\r\n      {\r\n        \"row\": 3\r\n      },\r\n      {\r\n        \"name\": \"label-header\"\r\n      }\r\n    ]\r\n  }\r\n}");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.AreEqual(left.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Unpatch_Bug16SilentFail_Success()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse("{\r\n    \"members\": [\r\n      {\r\n        \"name\": \"text-box\",\r\n        \"version\": \"1.0.0\",\r\n        \"required\": false,\r\n        \"isArray\": false,\r\n        \"row\": 2,\r\n        \"rowSpan\": 1,\r\n        \"column\": 0,\r\n        \"columnSpan\": 1,\r\n        \"readOnly\": false,\r\n        \"properties\": [\r\n          {\r\n            \"destPath\": \"ng-model\",\r\n            \"srcPath\": \"cmt\"\r\n          }\r\n        ],\r\n        \"parent\": \"Acknowledge Unit (111)\"\r\n      },\r\n      {\r\n        \"name\": \"component-label\",\r\n        \"version\": \"1.0.0\",\r\n        \"label\": \"COMMAND_DIALOG_COMMENT\",\r\n        \"required\": false,\r\n        \"isArray\": false,\r\n        \"row\": 1,\r\n        \"rowSpan\": 1,\r\n        \"column\": 0,\r\n        \"columnSpan\": 1,\r\n        \"readOnly\": false,\r\n        \"properties\": [],\r\n        \"parent\": \"Acknowledge Unit (111)\"\r\n      }\r\n    ]\r\n  \r\n}");
+			var right = JToken.Parse("{\r\n    \"members\": [\r\n      {\r\n        \"name\": \"text-box\",\r\n        \"version\": \"1.0.0\",\r\n        \"required\": false,\r\n        \"isArray\": false,\r\n        \"row\": 3,\r\n        \"rowSpan\": 1,\r\n        \"column\": 0,\r\n        \"columnSpan\": 1,\r\n        \"readOnly\": false,\r\n        \"properties\": [\r\n          {\r\n            \"destPath\": \"ng-model\",\r\n            \"srcPath\": \"cmt\"\r\n          }\r\n        ],\r\n        \"parent\": \"Acknowledge Unit (111)\"\r\n      },\r\n      {\r\n        \"name\": \"component-label\",\r\n        \"version\": \"1.0.0\",\r\n        \"label\": \"COMMAND_DIALOG_COMMENT\",\r\n        \"required\": false,\r\n        \"isArray\": false,\r\n        \"row\": 2,\r\n        \"rowSpan\": 1,\r\n        \"column\": 0,\r\n        \"columnSpan\": 1,\r\n        \"readOnly\": false,\r\n        \"properties\": [],\r\n        \"parent\": \"Acknowledge Unit (111)\"\r\n      },\r\n      {\r\n        \"name\": \"label-header\",\r\n        \"version\": \"1.0.0\",\r\n        \"column\": 0,\r\n        \"row\": 0,\r\n        \"columnSpan\": 1,\r\n        \"rowSpan\": 1,\r\n        \"properties\": [],\r\n        \"addedArgs\": {},\r\n        \"parent\": \"Acknowledge Unit (111)\",\r\n        \"label\": \"test\"\r\n      }\r\n    ]\r\n  }");
+			var patch = jdp.Diff(left, right);
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.IsTrue(JToken.DeepEquals(left.ToString(), patched.ToString()));
 		}
 	}
 }

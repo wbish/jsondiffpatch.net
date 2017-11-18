@@ -622,6 +622,12 @@ namespace JsonDiffPatchDotNet
 				}
 			}
 
+			// first modify entries
+			foreach (var op in toModify)
+			{
+				JToken p = Unpatch(right[int.Parse(op.Name)], op.Value);
+				right[int.Parse(op.Name)] = p;
+			}
 
 			// remove items, in reverse order to avoid sawing our own floor
 			toRemove.Sort((x, y) => int.Parse(x.Name).CompareTo(int.Parse(y.Name)));
@@ -636,12 +642,6 @@ namespace JsonDiffPatchDotNet
 			foreach (var op in toInsert)
 			{
 				right.Insert(int.Parse(op.Name), ((JArray)op.Value)[0]);
-			}
-
-			foreach (var op in toModify)
-			{
-				JToken p = Unpatch(right[int.Parse(op.Name)], op.Value);
-				right[int.Parse(op.Name)] = p;
 			}
 
 			return right;

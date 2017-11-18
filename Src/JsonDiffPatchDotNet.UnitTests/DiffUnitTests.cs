@@ -259,7 +259,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Diff_EfficientArrayDiffHugeArrays_NoStackOverflow()
 		{
-			const int ARRAY_SIZE = 1000;
+			const int arraySize = 1000;
 			Func<int, int, JToken> hugeArrayFunc = (startIndex, count) =>
 			{
 				var builder = new StringBuilder("[");
@@ -273,8 +273,8 @@ namespace JsonDiffPatchDotNet.UnitTests
 			};
 
 			var jdp = new JsonDiffPatch();
-			var left = hugeArrayFunc(0, ARRAY_SIZE);
-			var right = hugeArrayFunc(ARRAY_SIZE / 2, ARRAY_SIZE);
+			var left = hugeArrayFunc(0, arraySize);
+			var right = hugeArrayFunc(arraySize / 2, arraySize);
 
 			JToken diff = jdp.Diff(left, right);
 			var restored = jdp.Patch(left, diff);
