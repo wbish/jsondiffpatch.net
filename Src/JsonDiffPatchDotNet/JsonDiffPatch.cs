@@ -322,7 +322,7 @@ namespace JsonDiffPatchDotNet
 				// Property deleted
 				if (rp == null)
 				{
-					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, 0, (int)DiffOperation.Deleted)));
+					diffPatch.Add(new JProperty(lp.Name, new JArray(_options.OmitLeftSideOnDiff ? new JValue("") : lp.Value, 0, (int)DiffOperation.Deleted)));
 					continue;
 				}
 
@@ -405,7 +405,7 @@ namespace JsonDiffPatchDotNet
 				if (lcs.Indices1.IndexOf(index - commonHead) < 0)
 				{
 					// Removed
-					result[$"_{index}"] = new JArray(left[index], 0, (int)DiffOperation.Deleted);
+					result[$"_{index}"] = new JArray(_options.OmitLeftSideOnDiff ? new JValue("") : left[index], 0, (int)DiffOperation.Deleted);
 				}
 			}
 

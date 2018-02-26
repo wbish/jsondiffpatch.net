@@ -10,6 +10,20 @@ JSON object diffs and reversible patching ([jsondiffpatch](https://github.com/be
 
 The library has support for the following 3 operations: Diff, Patch and Unpatch.
 
+### Options
+
+There are currently 3 core options when you initialize the library.
+
+``` C#
+	new JsonDiffPatch(new Options
+		{
+			ArrayDiff = ArrayDiffMode.Efficient, // Determines [simple] or [efficient] array diff.
+			TextDiff = TextDiffMode.Efficient, // Determines [simple] or [efficient] text diff.
+			MinEfficientTextDiffLength = 50, // Minimum characters before using efficient diff.
+			OmitLeftSideOnDiff = false // Will omit the LEFT side value in a diff document.  Smaller diff, but unable to unpatch.
+		});
+```
+
 ### Diff
 
 Diff two json objects

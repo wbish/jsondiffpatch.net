@@ -7,6 +7,7 @@
 			ArrayDiff = ArrayDiffMode.Efficient;
 			TextDiff = TextDiffMode.Efficient;
 			MinEfficientTextDiffLength = 50;
+		    OmitLeftSideOnDiff = false;
 		}
 
 		/// <summary>
@@ -24,5 +25,15 @@
 		/// length is not met, simple text diff will be used. The default length is 50 characters.
 		/// </summary>
 		public long MinEfficientTextDiffLength { get; set; }
+
+        /// <summary>
+        /// If true, will provide an empty string in serialized diff document
+        /// representing the left side object (original).  Useful for creating a
+        /// smaller package where unpatch is not needed.
+        /// </summary>
+        /// <remarks>
+        /// DANGER: Unpatch will not be supported.
+        /// </remarks>
+        public bool OmitLeftSideOnDiff { get; set; }
 	}
 }
