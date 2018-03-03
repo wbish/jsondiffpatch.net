@@ -225,5 +225,18 @@ namespace JsonDiffPatchDotNet.UnitTests
 
 			Assert.IsTrue(JToken.DeepEquals(left.ToString(), patched.ToString()));
 		}
+
+		[Test]
+		public void Unpatch_Bug17EfficienText_Success()
+		{
+			var jdp = new JsonDiffPatch();
+			var left = JToken.Parse("{ \"key\": \"aaaa aaaaaa aaaa aaaaaaa: aaaaaaaaa aaaa aaaaaaaa aaaa: 31-aaa-2017 aaaaa aaaaa aaaaaaa aaaa aaaaaaaa aaaa: 31-aaa-2017aaaaaa aaaaaa: aaaaaaaaa aaaaaa: aaaaaa aaaaa aaaaa aaaaaaa aaaaaa: aaaaaaaaaa aaaaaaaa aaaaaaa: aaaa(aaaa aaaaaa/aaaaaaaaaaaa)-aaaaaaa(aaaaaaaaaa/aaaaaaaaaa aaaa aaaaaa)aaaaa aaaaa aaaaaaa:aaaaaa aaaaaaa: aaaaaaaa aaaaaaaaaa aaaaaaa: aaaaaaaaaaaa aaaaaaaaaa: aaaaaaaa-aaaaaaaaaaaaaaaa aaaaaaaaaa aaaaaa: aaaaaaaaaaaaaaaa aaaaaaaaaa aaaaa: aaaaaaaa aaaaa-aaaaa aaaaaaaaaa, aaaaa aaaaaaa aa aaaaaaa aaaaaaaaaaaa aaaaa aaaaaaaaaaa (aaaaaa), aaaaa a 100 aaaaa aa aaa aaaaaaa.aaa aaaa: aaaaaaaaaaaaaaaa: aaaaaaaaaaaa aaaaaaaa: aaa aaaaa aaaaa:aaaaaaa aaaaaaa: 31-aaa-2014aaaaaa aaaaa: 16-aaa-2016aaaaaa aaaaa: 30-aaa-2017aaaaaa aaaaa: 27-aaa-2017aaaaaa aaaaa: 31-aaa-2017aa aaaaaaaaaa aaaaaaaaaa, (aaaaa aa aaaa aa a 52.67 aaaaa aa aaaa aaa aaaa aaaaaa aaaaaa), aaaaa 100 aa aaaa aaaaaaa.aaaaaaa aaaaaaa: 16-aaa-2016aaaa aaaaaaa aa 100 aaaaa aa aaaa aaa aaaa aaaaaa aaa aa aaaaaaaaaa aaa aaaaaaaaaa, a 88.02 aaaaaaaaaa aa aaaa aaa aaaa aaaaaa aaaaaa.aaaaaaa aaaaaaa: 30-aaa-2017aaaa aaaaaaa aa 100 aaaaa aa aaa-aaaa aaaaaa, aaaaa aa 100 aaaaa aa aaaa aaa aaaa aaaaaa aaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaa aaa, aaaaa aa aaaa aa 65.656 aaaaa aa aaaa aaa aaaa aaaaaa aaa aa aaaaaaaaaa aaa aaaaaaaaaa aaa 34.343 aa aaaa aaa aaaa aaaaaa aaaaaa. aaaa aaa aaaa aaaaaa aaa aa aaaaaaaaaa aaa aaaaaaaaaa aa 88.02 aaaaa aa aaaa aaa aaaa aaaaaa aaaaaa.aaaaaaa aaaaaaa: 27-aaa-2017aaaa aaaaaaa aa 100 aaaaa aa aaa-aaaa aaaaaa, aaaaa\" }");
+			var right = JToken.Parse("{ \"key\": \"aaaa aaaaaa aaaa aaaaaaa: aaaaaaaaa aaaa aaaaaaaa aaaa: 17-aaa-2017 aaaaa aaaaa aaaaaaa aaaa aaaaaaaa aaaa: 17-aaa-2017aaaaaa aaaaaa: aaaaaaaaa aaaaaa: aaaaaa aaaaa aaaaa aaaaaaa aaaaaa: aaaaaaaaaa aaaaaaaa aaaaaaa: aaaa(aaaa aaaaaa/aaaaaaaaaaaa)-aaaaaaa(aaaaaaaaaa/aaaaaaaaaa aaaa aaaaaa)aaaaa aaaaa aaaaaaa:aaaaaa aaaaaaa: aaaaaaaa aaaaaaaaaa aaaaaaa: aaaaaaaaaaaa aaaaaaaaaa: aaaaaaaa-aaaaaaaaaaaaaaaa aaaaaaaaaa aaaaaa: aaaaaaaaaaaaaaaa aaaaaaaaaa aaaaa aaaa: -2016aaaaaaaaa aaaaaaaaaa aaaaa: aaaa aaaaaaa aa 100 aaaaa aa aaa-aaaa aaaaaa aaa, aaaaaaaa aaaaaaaaaa aa aaaaaa.aaaaaaaaa aaaaaaaaaa: aaaaaaaa-aaaaaaaaaaaaaaaa aaaaaaaaaa aaaaaa: aaaaaaaaaaaaa aaaaaaaaaa aa aaaa: -2016aaaaaaaaa aaaaaaaaaa aaaaa: aaaaaaaa aaaaa-aaaaa aaaaaaaaaa, aaaaa aaaaaaa aa aaaaaaa aaaaaaaaaaaa aaaaa aaaaaaaaaaa (aaaaaa), aaaaa a 100 aaaaa aa aaa aaaaaaa.aaa aaaa: aaaaaaaaaaaaaaaa: aaaaaaaaaaaa aaaaaaaa: aaa aaaaa aaaaa:aaaaaaa aaaaaaa: 31-aaa-2014aaaaaa aaaaa: 16-aaa-2016aaaaaa aaaaa: 30-aaa-2017aaaaaa aaaaa: 27-aaa-2017aaaaaa aaaaa: 31-aaa-2017aaaaaa aaaaa: 16-aaa-2017aa aaaaaaaaaa aaaaaaaaaa, (aaaaa aa aaaa aa a 52.67 aaaaa aa aaaa aaa aaaa aaaaaa aaaaaa), aaaaa 100 aa aaaa aaaaaaa.aaaaaaa aaaaaaa: 16-aaa-2016aaaa\" }");
+			JToken patch = jdp.Diff(left, right);
+
+			var patched = jdp.Unpatch(right, patch);
+
+			Assert.IsTrue(JToken.DeepEquals(left.ToString(), patched.ToString()));
+		}
 	}
 }

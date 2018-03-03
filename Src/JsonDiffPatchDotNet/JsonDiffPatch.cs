@@ -222,9 +222,17 @@ namespace JsonDiffPatchDotNet
 							throw new InvalidDataException("Invalid textline");
 
 						var unpatches = new List<Patch>();
-						foreach (Patch p in patches)
+						for (int i = patches.Count - 1; i >= 0; --i)
 						{
-							var u = new Patch();
+							Patch p = patches[i];
+							var u = new Patch
+							{
+								length1 = p.length1,
+								length2 = p.length2,
+								start1 = p.start1,
+								start2 = p.start2
+							};
+
 							foreach (Diff d in p.diffs)
 							{
 								if (d.operation == Operation.DELETE)
