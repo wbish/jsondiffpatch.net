@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <RootNamespace>JsonDiffPatchDotNet.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\JsonDiffPatchDotNet.UnitTests\DiffMatchPatchTest.cs" Link="DiffMatchPatchTest.cs" />
+    <Compile Include="..\JsonDiffPatchDotNet.UnitTests\DiffUnitTests.cs" Link="DiffUnitTests.cs" />
+    <Compile Include="..\JsonDiffPatchDotNet.UnitTests\PatchUnitTests.cs" Link="PatchUnitTests.cs" />
+    <Compile Include="..\JsonDiffPatchDotNet.UnitTests\UnpatchUnitTests.cs" Link="UnpatchUnitTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JsonDiffPatchDotNet\JsonDiffPatchDotNet.NetStandard.csproj" />
+  </ItemGroup>
+
+</Project>
