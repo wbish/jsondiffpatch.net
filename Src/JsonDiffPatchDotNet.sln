@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDiffPatchDotNet", "JsonDiffPatchDotNet\JsonDiffPatchDotNet.csproj", "{50825AC2-B521-47D9-9A68-DF6689DF61CC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B520C700-7D45-4D82-BFB5-218FA68CF5CF}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		NuGet.Config = NuGet.Config
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDiffPatchDotNet.UnitTests", "JsonDiffPatchDotNet.UnitTests\JsonDiffPatchDotNet.UnitTests.csproj", "{619EA3C5-4AED-4220-8397-1024A2358CEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonDiffPatchDotNet", "JsonDiffPatchDotNet\JsonDiffPatchDotNet.csproj", "{CB5ADECE-CCCE-402E-8682-7A90B6E26DC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonDiffPatchDotNet.UnitTests", "JsonDiffPatchDotNet.UnitTests\JsonDiffPatchDotNet.UnitTests.csproj", "{9A89568A-263A-42F8-BBBF-815AC8D0BDD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +19,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50825AC2-B521-47D9-9A68-DF6689DF61CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{619EA3C5-4AED-4220-8397-1024A2358CEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB5ADECE-CCCE-402E-8682-7A90B6E26DC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB5ADECE-CCCE-402E-8682-7A90B6E26DC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB5ADECE-CCCE-402E-8682-7A90B6E26DC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB5ADECE-CCCE-402E-8682-7A90B6E26DC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A89568A-263A-42F8-BBBF-815AC8D0BDD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A89568A-263A-42F8-BBBF-815AC8D0BDD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A89568A-263A-42F8-BBBF-815AC8D0BDD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A89568A-263A-42F8-BBBF-815AC8D0BDD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7CDD67CF-CD53-43DD-8CD5-9AD796C07C08}
 	EndGlobalSection
 EndGlobal
