@@ -1,7 +1,6 @@
 # jsondiffpatch.net
 <!--- badges -->
-[![Build Status](https://secure.travis-ci.org/wbish/jsondiffpatch.net.svg)](http://travis-ci.org/wbish/jsondiffpatch.net)
-[![Coverage Status](https://coveralls.io/repos/github/wbish/jsondiffpatch.net/badge.svg?branch=master)](https://coveralls.io/github/wbish/jsondiffpatch.net?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/aavhn0lwas0j29gy?svg=true)](https://ci.appveyor.com/project/wbish/jsondiffpatch-net)
 [![NuGet](https://img.shields.io/nuget/v/JsonDiffPatch.Net.svg)](https://www.nuget.org/packages/JsonDiffPatch.Net/)
 
 JSON object diffs and reversible patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
