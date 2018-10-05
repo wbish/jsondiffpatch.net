@@ -224,9 +224,9 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Diff_EfficientArrayDiffSameLengthNested_ValidDiff()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
-			var left = JToken.Parse(@"[1,2,{""p"":false},4]");
-			var right = JToken.Parse(@"[1,2,{""p"":true},4]");
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+			var left = JToken.Parse(@"[1,2,{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false},4]");
+			var right = JToken.Parse(@"[1,2,{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true},4]");
 
 			JObject diff = jdp.Diff(left, right) as JObject;
 
@@ -235,7 +235,21 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(diff["2"]);
 		}
 
-		[Test]
+        [Test]
+        public void Diff_EfficientArrayDiffWithComplexObject_ValidDiff()
+        {
+            var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+            //var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+            var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]");
+            var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":false}]");
+
+            JObject diff = jdp.Diff(left, right) as JObject;
+
+            Assert.IsNotNull(diff);
+            Assert.AreEqual(4, diff.Properties().Count());
+        }
+
+        [Test]
 		public void Diff_EfficientArrayDiffSameWithObject_NoDiff()
 		{
 			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
