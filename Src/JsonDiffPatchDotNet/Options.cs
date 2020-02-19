@@ -10,7 +10,7 @@
 		}
 
 		/// <summary>
-		/// Specifies how arrays are diffed. The default is Simple.
+		/// Specifies how arrays are diffed. The default is Efficient.
 		/// </summary>
 		public ArrayDiffMode ArrayDiff { get; set; }
 
