@@ -1,4 +1,4 @@
-﻿using JsonDiffPatchDotNet.Formatters.JsonPatch;
+using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 

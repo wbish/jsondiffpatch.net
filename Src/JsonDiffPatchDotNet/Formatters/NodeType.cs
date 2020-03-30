@@ -1,9 +1,9 @@
-﻿namespace JsonDiffPatchDotNet.Formatters
+namespace JsonDiffPatchDotNet.Formatters
 {
-    public enum NodeType
-    {
-        Unknown,
-        Object,
-        Array
-    }
+	public enum NodeType
+	{
+		Unknown,
+		Object,
+		Array
+	}
 }
