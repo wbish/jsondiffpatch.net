@@ -5,7 +5,6 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B520C700-7D45-4D82-BFB5-218FA68CF5CF}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		global.json = global.json
 		NuGet.Config = NuGet.Config
 	EndProjectSection
