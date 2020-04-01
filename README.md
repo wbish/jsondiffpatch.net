@@ -5,6 +5,14 @@
 
 JSON object diffs and reversible patching ([jsondiffpatch](https://github.com/benjamine/jsondiffpatch) compatible)
 
+## Installing
+
+Install from [jsondiffpatch.net](https://www.nuget.org/packages/JsonDiffPatch.Net/) nuget website, or run the following command:
+
+``` PowerShell
+Install-Package JsonDiffPatch.Net
+````
+
 ## Usage
 
 The library has support for the following 3 operations: Diff, Patch and Unpatch.
@@ -17,11 +25,11 @@ Diff two json objects
   var jdp = new JsonDiffPatch();
   var left = JToken.Parse(@"{ ""key"": false }");
   var right = JToken.Parse(@"{ ""key"": true }");
-  
+
   JToken patch = jdp.Diff(left, right);
-  
+
   Console.WriteLine(patch.ToString());
-  
+
   // Output:
   // {
   //     "key": [false, true]
@@ -37,11 +45,11 @@ Patch a left object with a patch document
   var left = JToken.Parse(@"{ ""key"": false }");
   var right = JToken.Parse(@"{ ""key"": true }");
   JToken patch = jdp.Diff(left, right);
-  
+
   var output = jdp.Patch(left, patch);
-  
+
   Console.WriteLine(output.ToString());
-  
+
   // Output:
   // {
   //     "key": true
@@ -57,11 +65,11 @@ Unpatch a right object with a patch document
   var left = JToken.Parse(@"{ ""key"": false }");
   var right = JToken.Parse(@"{ ""key"": true }");
   JToken patch = jdp.Diff(left, right);
-  
+
   var output = jdp.Unpatch(right, patch);
-  
+
   Console.WriteLine(output.ToString());
-  
+
   // Output:
   // {
   //     "key": false
@@ -78,10 +86,10 @@ JsonDiffPatch.Net is designed to handle complex diffs by producing a compact dif
 - Efficient string diffing using google-diff-match-patch
 - Nested object diffs
 
-The full JSON patch document format is documented at https://github.com/benjamine/jsondiffpatch. 
+The full JSON patch document format is documented at https://github.com/benjamine/jsondiffpatch.
 
 ``` JavaScript
-var left = 
+var left =
 {
   "id": 100,
   "revision": 5,
@@ -144,13 +152,24 @@ var output = jdp.Diff(left, right);
 }
 ```
 
-## Installing
+## JSON Patches (RFC 6902)
 
-Install from [jsondiffpatch.net](https://www.nuget.org/packages/JsonDiffPatch.Net/) nuget website, or run the following command:
+A diff result can be converted into JSON patches, according to the [RFC 6902 spec](https://tools.ietf.org/html/rfc6902).
 
-``` PowerShell
-Install-Package JsonDiffPatch.Net
-````
+```csharp
+var left = JObject.Parse("{ \"name\": \"Justin\" }");
+var right = JObject.Parse("{ \"name\" : \"John\", \"age\": 34 }");
+var patch = new JsonDiffPatch().Diff(left, right);
+var formatter = new JsonDeltaFormatter();
+var operations = formatter.Format(patch);
+
+/*
+operations: [
+  { "op": "replace", "path": "/name", "value": "John" },
+  { "op": "add", "path": "/age", "value": 34 }
+]
+*/
+```
 
 ## Attributions
 * [jsondiffpatch](https://github.com/benjamine/jsondiffpatch)
