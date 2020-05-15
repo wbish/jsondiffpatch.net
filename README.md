@@ -173,5 +173,5 @@ operations: [
 
 ## Attributions
 * [jsondiffpatch](https://github.com/benjamine/jsondiffpatch)
-* [google-diff-match-patch](https://code.google.com/archive/p/google-diff-match-patch/)
+* [google-diff-match-patch](https://github.com/google/diff-match-patch)
 * [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/)
