@@ -9,8 +9,6 @@ namespace JsonDiffPatchDotNet.Formatters
 	{
 		public delegate void DeltaKeyIterator(string key, string leftKey, MoveDestination movedFrom, bool isLast);
 
-		private static readonly IComparer<string> s_arrayKeyComparer = new ArrayKeyComparer();
-
 		public TResult Format(JToken delta)
 		{
 			var context = new TContext();
@@ -107,10 +105,7 @@ namespace JsonDiffPatchDotNet.Formatters
 				}
 			}
 
-			if (arrayKeys)
-				keys.Sort(s_arrayKeyComparer);
-			else
-				keys.Sort();
+			keys.Sort();
 
 			for (var index = 0; index < keys.Count; index++)
 			{
