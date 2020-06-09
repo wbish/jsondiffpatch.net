@@ -92,6 +92,22 @@ namespace JsonDiffPatchDotNet.UnitTests
 			AssertOperation(operations[1], OperationTypes.Add, "/items/1", JValue.CreateString("bus"));
 		}
 
+		[Test]
+		public void Format_ArrayAddsInOrder_Success()
+		{
+			var jdp = new JsonDiffPatch();
+			var formatter = new JsonDeltaFormatter();
+			var left = JObject.Parse(@"{""items"":[]}");
+			var right = JObject.Parse(@"{""items"":[""bike"",""car"",""bus""]}");
+			var patch = jdp.Diff(left, right);
+			var operations = formatter.Format(patch);
+
+			Assert.AreEqual(3, operations.Count);
+			AssertOperation(operations[0], OperationTypes.Add, "/items/0", JValue.CreateString("bike"));
+			AssertOperation(operations[1], OperationTypes.Add, "/items/1", JValue.CreateString("car"));
+			AssertOperation(operations[2], OperationTypes.Add, "/items/2", JValue.CreateString("bus"));
+		}
+
 		private void AssertOperation(Operation operation, string expectedOp, string expectedPath, JValue expectedValue = null)
 		{
 			Assert.AreEqual(expectedOp, operation.Op);
