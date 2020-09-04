@@ -6,10 +6,7 @@ namespace JsonDiffPatchDotNet.Formatters
 	{
 		public int Compare(string x, string y)
 		{
-			// This purposefully REVERSED from benjamine/jsondiffpatch,
-			// In order to match logic found in JsonDiffPatch.ArrayPatch,
-			// which applies operations in reverse order to avoid shifting floor
-			return ArrayKeyToSortNumber(y) - ArrayKeyToSortNumber(x);
+			return ArrayKeyToSortNumber(x) - ArrayKeyToSortNumber(y);
 		}
 
 		private static int ArrayKeyToSortNumber(string key)
