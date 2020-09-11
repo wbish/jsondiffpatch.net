@@ -11,7 +11,7 @@ namespace JsonDiffPatchDotNet.Formatters
 
 		private static readonly IComparer<string> s_arrayKeyComparer = new ArrayKeyComparer();
 
-		public TResult Format(JToken delta)
+		public virtual TResult Format(JToken delta)
 		{
 			var context = new TContext();
 			Recurse(context, delta, left: null, key: null, leftKey: null, movedFrom: null, isLast: false);
