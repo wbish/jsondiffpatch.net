@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -296,6 +297,6 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(2, array.Count);
 			Assert.AreEqual(left, array[0]);
 			Assert.AreEqual(right, array[1]);
-		}
+		}		
 	}
 }

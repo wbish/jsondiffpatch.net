@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using DiffMatchPatch;
@@ -67,7 +68,9 @@ namespace JsonDiffPatchDotNet
 			}
 
 			if (!JToken.DeepEquals(left, right))
+			{
 				return new JArray(left, right);
+			}				
 
 			return null;
 		}
@@ -325,9 +328,20 @@ namespace JsonDiffPatchDotNet
 			// Find properties modified or deleted
 			foreach (var lp in left.Properties())
 			{
+				//Skip property if in path exclustions
+				if (_options.ExcludePaths.Count > 0 && _options.ExcludePaths.Any(p => p.Equals(lp.Path, StringComparison.OrdinalIgnoreCase)))
+				{
+					continue;
+				}
+
 				JProperty rp = right.Property(lp.Name);
 
 				// Property deleted
+				if (rp == null && (_options.DiffBehaviors & DiffBehavior.IgnoreMissingProperties) == DiffBehavior.IgnoreMissingProperties)
+				{
+					continue;
+				}
+
 				if (rp == null)
 				{
 					diffPatch.Add(new JProperty(lp.Name, new JArray(lp.Value, 0, (int)DiffOperation.Deleted)));
@@ -344,7 +358,7 @@ namespace JsonDiffPatchDotNet
 			// Find properties that were added 
 			foreach (var rp in right.Properties())
 			{
-				if (left.Property(rp.Name) != null)
+				if (left.Property(rp.Name) != null || (_options.DiffBehaviors & DiffBehavior.IgnoreNewProperties) == DiffBehavior.IgnoreNewProperties)
 					continue;
 
 				diffPatch.Add(new JProperty(rp.Name, new JArray(rp.Value)));

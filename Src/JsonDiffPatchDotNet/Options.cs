@@ -1,7 +1,11 @@
-﻿namespace JsonDiffPatchDotNet
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace JsonDiffPatchDotNet
 {
 	public sealed class Options
-	{
+	{		
 		public Options()
 		{
 			ArrayDiff = ArrayDiffMode.Efficient;
@@ -24,5 +28,15 @@
 		/// length is not met, simple text diff will be used. The default length is 50 characters.
 		/// </summary>
 		public long MinEfficientTextDiffLength { get; set; }
+
+		/// <summary>
+		/// Specifies which paths to exclude from the diff patch set
+		/// </summary>
+		public List<string> ExcludePaths { get; set; } = new List<string>();
+
+		/// <summary>
+		/// Specifies behaviors to apply to the diff patch set
+		/// </summary>
+		public DiffBehavior DiffBehaviors { get; set; }
 	}
 }
