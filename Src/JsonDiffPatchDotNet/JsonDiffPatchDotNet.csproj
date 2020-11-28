@@ -5,8 +5,8 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>JsonDiffPatchDotNet</RootNamespace>
     <AssemblyName>JsonDiffPatchDotNet</AssemblyName>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
+    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <FileVersion>2.3.0.0</FileVersion>
     <SignAssembly>true</SignAssembly>
     <RepositoryUrl>https://github.com/wbish/jsondiffpatch.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -22,7 +22,7 @@
     <AssemblyOriginatorKeyFile>JsonDiffPatchDotNet.snk</AssemblyOriginatorKeyFile>
     <MinClientVersion>2.12</MinClientVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.0.0</Version>
+    <Version>2.3.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
