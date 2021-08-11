@@ -32,7 +32,7 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 					break;
 
 				case DeltaType.Deleted:
-					FormatDeleted(context);
+					FormatDeleted(context, delta);
 					break;
 
 				case DeltaType.Moved:
@@ -71,17 +71,17 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 
 		private void FormatAdded(JsonFormatContext context, JToken delta)
 		{
-			context.PushCurrentOp(OperationTypes.Add, delta[0]);
+			context.PushCurrentOp(OperationTypes.Add, null, delta[0]);
 		}
 
 		private void FormatModified(JsonFormatContext context, JToken delta)
 		{
-			context.PushCurrentOp(OperationTypes.Replace, delta[1]);
+			context.PushCurrentOp(OperationTypes.Replace, delta[0], delta[1]);
 		}
 
-		private void FormatDeleted(JsonFormatContext context)
+		private void FormatDeleted(JsonFormatContext context, JToken delta)
 		{
-			context.PushCurrentOp(OperationTypes.Remove);
+			context.PushCurrentOp(OperationTypes.Remove, delta[0]);
 		}
 
 		private void FormatMoved(JsonFormatContext context, JToken delta)
