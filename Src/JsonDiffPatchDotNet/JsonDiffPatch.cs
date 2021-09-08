@@ -384,8 +384,8 @@ namespace JsonDiffPatchDotNet
             int commonHead = 0;
             int commonTail = 0;
 
-            if (itemMatch.Match(left, right))
-                return null;
+			if (JToken.DeepEquals(left, right))
+				return null;
 
             var childContext = new List<JToken>();
 

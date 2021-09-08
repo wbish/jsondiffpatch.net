@@ -250,7 +250,23 @@ namespace JsonDiffPatchDotNet.UnitTests
             Assert.AreEqual(4, diff.Properties().Count());
         }
 
-        [Test]
+		[Test]
+		public void Diff_EfficientArrayDiffWithComplexObjectHash_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+			var left = JToken.Parse(@"[{""Id"": ""22ff56c7-2307-414b-8a3a-9bf1cdba2095"",""city"":""São Paulo""},{""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25bd6"",""city"":""abc""},{""Id"":""1fe6a0f9-3974-427f-81cb-6004748cb179"",""city"":""xyz""}]");
+			var right = JToken.Parse(@"[{""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25bd6"",""city"":""abc""},{""Id"":""1fe6a0f9-3974-427f-81cb-6004748cb179"",""city"":""xyz""}, {""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25b44"",""city"":""new""}]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(3, diff.Properties().Count());
+			Assert.IsNotNull(diff["_0"]);
+			Assert.IsNotNull(diff["2"]);
+			Assert.AreEqual(((JArray)diff["2"])[0].Value<string>("city"), "new");
+		}
+
+		[Test]
 		public void Diff_EfficientArrayDiffSameWithObject_NoDiff()
 		{
 			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
