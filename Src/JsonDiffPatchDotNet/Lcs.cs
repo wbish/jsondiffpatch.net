@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -50,29 +50,34 @@ namespace JsonDiffPatchDotNet
 
         private static Lcs Backtrack(int[,] matrix, List<JToken> left, List<JToken> right, int li, int ri, ItemMatch match)
         {
+            var index1 = li;
+            var index2 = ri;
             var result = new Lcs();
-            for (int i = 1, j = 1; i <= li && j <= ri;)
-            {
-                // If the JSON tokens at the same position are both Objects or both Arrays, we just say they 
-                // are the same even if they are not, because we can package smaller deltas than an entire 
-                // object or array replacement by doing object to object or array to array diff.
-                if (match.Match(left[i - 1], right[j - 1]))
-                {
-                    result.Sequence.Add(left[i - 1]);
-                    result.Indices1.Add(i - 1);
-                    result.Indices2.Add(j - 1);
-                    i++;
-                    j++;
-                    continue;
-                }
 
-                if (matrix[i, j - 1] > matrix[i - 1, j])
+            while (index1 != 0 && index2 != 0)
+            {
+                var sameLetter = match.Match(left[index1 - 1], right[index2 - 1]);
+
+                if (sameLetter)
                 {
-                    i++;
+                    result.Sequence.Add(left[index1 - 1]);
+                    result.Indices1.Add(index1 - 1);
+                    result.Indices2.Add(index2 - 1);
+                    --index1;
+                    --index2;
                 }
                 else
                 {
-                    j++;
+                    var valueAtMatrixAbove = matrix[index1, index2 - 1];
+                    var valueAtMatrixLeft = matrix[index1 - 1, index2];
+                    if (valueAtMatrixAbove > valueAtMatrixLeft)
+                    {
+                        --index2;
+                    }
+                    else
+                    {
+                        --index1;
+                    }
                 }
             }
 
