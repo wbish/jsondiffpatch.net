@@ -51,7 +51,7 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 
 		protected override void NodeBegin(JsonFormatContext context, string key, string leftKey, DeltaType type, NodeType nodeType, bool isLast)
 		{
-			context.Path.Add(leftKey);
+			context.Path.Add(Escape(leftKey));
 		}
 
 		protected override void NodeEnd(JsonFormatContext context, string key, string leftKey, DeltaType type, NodeType nodeType, bool isLast)
@@ -63,6 +63,13 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 		protected override void RootBegin(JsonFormatContext context, DeltaType type, NodeType nodeType) { }
 
 		protected override void RootEnd(JsonFormatContext context, DeltaType type, NodeType nodeType) { }
+
+		private string Escape(string key)
+		{
+			if (string.IsNullOrEmpty(key)) return key;
+			return key.Replace("~", "~0")
+				.Replace("/", "~1");
+		}
 
 		private void FormatNode(JsonFormatContext context, JToken delta, JToken left)
 		{

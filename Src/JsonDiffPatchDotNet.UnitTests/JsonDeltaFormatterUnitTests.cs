@@ -1,6 +1,7 @@
 using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System.Linq;
 
 namespace JsonDiffPatchDotNet.UnitTests
 {
@@ -119,6 +120,20 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(2, operations.Count);
 			AssertOperation(operations[0], OperationTypes.Remove, "/2");
 			AssertOperation(operations[1], OperationTypes.Remove, "/1");
+		}
+
+		[Test]
+		public void Format_EscapeOfJsonPointer_Success()
+		{
+			var left = JObject.Parse(@"{ ""a/b"": ""a"", ""a~b"": ""ab"", ""a/~b"": ""abb"",""a/b/c~"": ""abc"" }");
+			var right = JObject.Parse(@"{ ""a/b"": ""ab"", ""a~b"": ""ba"", ""a/~b"": ""bba"",""a/b/c~"": ""cba""  }");
+			var patch = Differ.Diff(left, right);
+			var operations = Formatter.Format(patch);
+
+			Assert.IsTrue(operations.Any(x => x.Path.Equals("/a~1b") && x.Value.ToString().Equals("ab")));
+			Assert.IsTrue(operations.Any(x => x.Path.Equals("/a~0b") && x.Value.ToString().Equals("ba")));
+			Assert.IsTrue(operations.Any(x => x.Path.Equals("/a~1~0b") && x.Value.ToString().Equals("bba")));
+			Assert.IsTrue(operations.Any(x => x.Path.Equals("/a~1b~1c~0") && x.Value.ToString().Equals("cba")));
 		}
 
 		private void AssertOperation(Operation operation, string expectedOp, string expectedPath, JValue expectedValue = null)
