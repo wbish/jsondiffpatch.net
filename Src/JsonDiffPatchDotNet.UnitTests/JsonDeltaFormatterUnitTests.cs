@@ -166,6 +166,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var paths = operations.Select(o => o.Path).ToList();
 			// removal of the array item at index 1 should come before the item at index 0
 			Assert.Less(paths.IndexOf("/i/a/a/1"), paths.IndexOf("/i/a/a/0"));
+		}
 
 		public void Format_EscapeOfJsonPointer_Success()
 		{
