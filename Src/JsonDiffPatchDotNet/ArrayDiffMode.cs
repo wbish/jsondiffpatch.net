@@ -16,6 +16,6 @@
 		/// the entire left and entire right arrays are added to the patch document as a simple
 		/// JSON token replace. If they are the same, then token is skipped in the patch document.
 		/// </summary>
-		Simple,
+		Simple
 	}
 }
