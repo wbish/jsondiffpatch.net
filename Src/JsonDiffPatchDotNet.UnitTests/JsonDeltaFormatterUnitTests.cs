@@ -1,3 +1,4 @@
+using System.Linq;
 using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -123,6 +124,49 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
+		public void Format_SortsRemoveOperations_Success()
+		{
+			const string patchJson = @"
+{
+	""a"": {
+		""a"": [0,0,0],
+		""b"": [0,0,0],
+		""c"": {
+			""a"": {
+				""a"": [0,0,0],
+				""b"": [0,0,0],
+				""c"": [0,0,0],
+				""d"": [0,0,0],
+				""e"": [0,0,0],
+				""f"": [0,0,0]
+			}
+		}
+	},
+	""b"": [0,0,0],
+	""c"": [0,0,0],
+	""d"": [0,0,0],
+	""e"": [0,0,0],
+	""f"": [0,0,0],
+	""g"": [0,0,0],
+	""h"": [0,0,0],
+	""i"": {
+		""a"": {
+			""a"": {
+				""_t"": ""a"",
+				""_0"": [0,0,0],
+				""_1"": [0,0,0]
+			}
+		}
+	}
+}
+";
+			var patch = JToken.Parse(patchJson);
+			var operations = Formatter.Format(patch);
+
+			var paths = operations.Select(o => o.Path).ToList();
+			// removal of the array item at index 1 should come before the item at index 0
+			Assert.Less(paths.IndexOf("/i/a/a/1"), paths.IndexOf("/i/a/a/0"));
+
 		public void Format_EscapeOfJsonPointer_Success()
 		{
 			var left = JObject.Parse(@"{ ""a/b"": ""a"", ""a~b"": ""ab"", ""a/~b"": ""abb"",""a/b/c~"": ""abc"" }");
