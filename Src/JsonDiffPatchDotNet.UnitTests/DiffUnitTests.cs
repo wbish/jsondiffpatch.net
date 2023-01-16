@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -224,15 +225,45 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Diff_EfficientArrayDiffSameLengthNested_ValidDiff()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
-			var left = JToken.Parse(@"[1,2,{""p"":false},4]");
-			var right = JToken.Parse(@"[1,2,{""p"":true},4]");
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+			var left = JToken.Parse(@"[1,2,{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false},4]");
+			var right = JToken.Parse(@"[1,2,{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true},4]");
 
 			JObject diff = jdp.Diff(left, right) as JObject;
 
 			Assert.IsNotNull(diff);
 			Assert.AreEqual(2, diff.Properties().Count());
 			Assert.IsNotNull(diff["2"]);
+		}
+
+        [Test]
+        public void Diff_EfficientArrayDiffWithComplexObject_ValidDiff()
+        {
+            var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+            //var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+            var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]");
+            var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":false}]");
+
+            JObject diff = jdp.Diff(left, right) as JObject;
+
+            Assert.IsNotNull(diff);
+            Assert.AreEqual(4, diff.Properties().Count());
+        }
+
+		[Test]
+		public void Diff_EfficientArrayDiffWithComplexObjectHash_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+			var left = JToken.Parse(@"[{""Id"": ""22ff56c7-2307-414b-8a3a-9bf1cdba2095"",""city"":""São Paulo""},{""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25bd6"",""city"":""abc""},{""Id"":""1fe6a0f9-3974-427f-81cb-6004748cb179"",""city"":""xyz""}]");
+			var right = JToken.Parse(@"[{""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25bd6"",""city"":""abc""},{""Id"":""1fe6a0f9-3974-427f-81cb-6004748cb179"",""city"":""xyz""}, {""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25b44"",""city"":""new""}]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(3, diff.Properties().Count());
+			Assert.IsNotNull(diff["_0"]);
+			Assert.IsNotNull(diff["2"]);
+			Assert.AreEqual(((JArray)diff["2"])[0].Value<string>("city"), "new");
 		}
 
 		[Test]
@@ -296,6 +327,6 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.AreEqual(2, array.Count);
 			Assert.AreEqual(left, array[0]);
 			Assert.AreEqual(right, array[1]);
-		}
+		}		
 	}
 }

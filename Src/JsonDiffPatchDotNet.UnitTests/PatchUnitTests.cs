@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -246,6 +247,61 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var patched = jdp.Patch(left, patch);
 
 			Assert.IsTrue(JToken.DeepEquals(right.ToString(), patched.ToString()));
+		}
+
+		[Test]
+		public void Diff_ExcludePaths_ValidPatch()
+		{
+			var jdp = new JsonDiffPatch(new Options { ExcludePaths = new List<string>() { "id", "nested.id" } });
+			var left = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""old"", ""nested"": { ""id"":""nid"", ""p"":""old"" } }");
+			var right = JObject.Parse(@"{ ""id"": ""pid2"", ""p"": ""new"", ""nested"": { ""id"":""nid2"", ""p"":""new"" } }");
+			var expected = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""new"", ""nested"": { ""id"":""nid"", ""p"":""new"" } }");
+			var patch = jdp.Diff(left, right);
+			var patched = jdp.Patch(left, patch) as JObject;
+
+			Assert.AreEqual(expected.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Diff_Behaviors_IgnoreMissingProperties_ValidPatch()
+		{
+			var jdp = new JsonDiffPatch(new Options { DiffBehaviors = DiffBehavior.IgnoreMissingProperties });
+			var left = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""old"", ""nested"": { ""id"":""nid"", ""p"":""old"" } }");
+			var right = JObject.Parse(@"{ ""p"": ""new"", ""nested"": { ""p"":""new"" }, ""newP"": ""new"" }");
+			var expected = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""new"", ""nested"": { ""id"":""nid"", ""p"":""new"" }, ""newP"": ""new"" }");
+			var patch = jdp.Diff(left, right);
+			var patched = jdp.Patch(left, patch) as JObject;
+
+			Assert.AreEqual(expected.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Diff_Behaviors_IgnoreNewProperties_ValidPatch()
+		{
+			var jdp = new JsonDiffPatch(new Options { DiffBehaviors = DiffBehavior.IgnoreNewProperties });
+			var left = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""old"", ""nested"": { ""id"":""nid"", ""p"":""old"" } }");
+			var right = JObject.Parse(@"{ ""id"": ""pid2"", ""p"": ""new"", ""nested"": { ""id"":""nid2"", ""p"":""new"" }, ""newP"": ""new"" }");
+			var expected = JObject.Parse(@"{ ""id"": ""pid2"", ""p"": ""new"", ""nested"": { ""id"":""nid2"", ""p"":""new"" } }");
+			var patch = jdp.Diff(left, right);
+			var patched = jdp.Patch(left, patch) as JObject;
+
+			Assert.AreEqual(expected.ToString(), patched.ToString());
+		}
+
+		[Test]
+		public void Diff_ExludeAndBehaviors_ExcludeIgnoreMissingIgnoreNew_ValidPatch()
+		{
+			var jdp = new JsonDiffPatch(new Options {
+				ExcludePaths = new List<string>() { "id", "nested.id" },
+				DiffBehaviors = DiffBehavior.IgnoreMissingProperties | DiffBehavior.IgnoreNewProperties
+			});
+			var left = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""old"", ""nested"": { ""id"":""nid"", ""p"":""old"" } }");
+			var right = JObject.Parse(@"{ ""id"": ""pid2"", ""nested"": { ""id"":""nid2"" }, ""newP"": ""new"" }");
+			var expected = JObject.Parse(@"{ ""id"": ""pid"", ""p"": ""old"", ""nested"": { ""id"":""nid"", ""p"":""old"" } }");
+			var patch = jdp.Diff(left, right);
+			var patched = jdp.Patch(left, patch) as JObject;
+
+			Assert.AreEqual(expected.ToString(), patched.ToString());
 		}
 	}
 }
