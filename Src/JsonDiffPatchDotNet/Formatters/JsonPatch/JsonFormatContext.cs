@@ -22,12 +22,17 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 
 		public void PushCurrentOp(string op)
 		{
-			Operations.Add(new Operation(op, CurrentPath(), null));
+			Operations.Add(new Operation(op, CurrentPath(), null, null));
 		}
 
-		public void PushCurrentOp(string op, object value)
+		public void PushCurrentOp(string op, object from)
 		{
-			Operations.Add(new Operation(op, CurrentPath(), null, value));
+			Operations.Add(new Operation(op, CurrentPath(), from, null));
+		}
+
+		public void PushCurrentOp(string op, object from, object value)
+		{
+			Operations.Add(new Operation(op, CurrentPath(), from, value));
 		}
 
 		public void PushMoveOp(string to)
