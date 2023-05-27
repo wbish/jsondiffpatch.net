@@ -124,9 +124,9 @@ namespace JsonDiffPatchDotNet
 
 					if (_options.PatchBehavior == PatchBehavior.LeftMatchValidation)
 					{
-						if (left != patchArray[1])
+						if (JValue.EqualityComparer.Equals(left, patchArray[0])== false)
 						{
-							throw new Exception("abc");
+							throw new Exception($"replace left value is not match.expected:{left}, but {patchArray[0]}");
 						}
 					}
 
