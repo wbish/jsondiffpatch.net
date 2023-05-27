@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -143,6 +144,21 @@ namespace JsonDiffPatchDotNet.UnitTests
 			Assert.IsNotNull(result);
 			Assert.AreEqual(JTokenType.Boolean, result.Type);
 			Assert.AreEqual(true, result.ToObject<bool>());
+		}
+
+		[Test]
+		public void Patch_NotMatchLeft_Exception()
+		{
+			var jdp = new JsonDiffPatch(new Options(){ PatchBehavior = PatchBehavior.LeftMatchValidation});
+
+			var left1 = "{\"value\": 1}";
+			var left2 = "{}";
+
+			var right = "{\"value\": 3}";
+			var diff = "{\"value\": [2,3]}"; //no match with left value
+
+			Assert.Throws<Exception>(() => jdp.Patch(left1, diff));
+			Assert.Throws<Exception>(() => jdp.Patch(left2, diff));
 		}
 
 		[Test]

@@ -29,7 +29,7 @@ namespace JsonDiffPatchDotNet
 
 		/// <summary>
 		/// Diff two JSON objects.
-		/// 
+		///
 		/// The output is a JObject that contains enough information to represent the
 		/// delta between the two objects and to be able perform patch and reverse operations.
 		/// </summary>
@@ -38,11 +38,11 @@ namespace JsonDiffPatchDotNet
 		/// <returns>JSON Patch Document</returns>
 		public JToken Diff(JToken left, JToken right)
 		{
-		    
+
 		    var objectHash = this._options.ObjectHash;
             var itemMatch = new DefaultItemMatch(objectHash);
-		
-		
+
+
 			if (left == null)
 				left = new JValue("");
 			if (right == null)
@@ -75,7 +75,7 @@ namespace JsonDiffPatchDotNet
 			if (!itemMatch.Match(left, right))
 			{
 				return new JArray(left, right);
-			}				
+			}
 
 			return null;
 		}
@@ -111,6 +111,7 @@ namespace JsonDiffPatchDotNet
 
 			if (patch.Type == JTokenType.Array)
 			{
+
 				var patchArray = (JArray)patch;
 
 				if (patchArray.Count == 1)	// Add
@@ -120,6 +121,15 @@ namespace JsonDiffPatchDotNet
 
 				if (patchArray.Count == 2)	// Replace
 				{
+
+					if (_options.PatchBehavior == PatchBehavior.LeftMatchValidation)
+					{
+						if (left != patchArray[1])
+						{
+							throw new Exception("abc");
+						}
+					}
+
 					return patchArray[1];
 				}
 
@@ -280,7 +290,7 @@ namespace JsonDiffPatchDotNet
 
 		/// <summary>
 		/// Diff two JSON objects.
-		/// 
+		///
 		/// The output is a JObject that contains enough information to represent the
 		/// delta between the two objects and to be able perform patch and reverse operations.
 		/// </summary>
@@ -360,7 +370,7 @@ namespace JsonDiffPatchDotNet
 				}
 			}
 
-			// Find properties that were added 
+			// Find properties that were added
 			foreach (var rp in right.Properties())
 			{
 				if (left.Property(rp.Name) != null || (_options.DiffBehaviors & DiffBehavior.IgnoreNewProperties) == DiffBehavior.IgnoreNewProperties)
