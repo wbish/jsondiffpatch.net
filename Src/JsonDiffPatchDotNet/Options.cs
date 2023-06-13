@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace JsonDiffPatchDotNet
 {
 	public sealed class Options
-	{		
+	{
 		public Options()
 		{
 			ArrayDiff = ArrayDiffMode.Efficient;
@@ -39,9 +39,9 @@ namespace JsonDiffPatchDotNet
 		/// Specifies behaviors to apply to the diff patch set
 		/// </summary>
 		public DiffBehavior DiffBehaviors { get; set; }
-		
+
         /// <summary>
-        /// for LCS to work, it needs a way to match items between previous/original (or left/right) arrays. In traditional text diff tools this is trivial, as two lines of text are compared char 
+        /// for LCS to work, it needs a way to match items between previous/original (or left/right) arrays. In traditional text diff tools this is trivial, as two lines of text are compared char
         /// char.
         /// When no matches by reference or value are found, array diffing fallbacks to a dumb behavior: matching items by position.
         /// Matching by position is not the most efficient option (eg. if an item is added at the first position, all the items below will be considered modified), but it produces expected results
@@ -51,5 +51,10 @@ namespace JsonDiffPatchDotNet
         /// To improve the results leveraging the power of LCS(and position move detection) you need to provide a way to compare 2 objects.
         /// </summary>
         public Func<JToken, object> ObjectHash { get; set; }
+
+		/// <summary>
+		/// Specifies behaviors to apply to the patch
+		/// </summary>
+        public PatchBehavior PatchBehavior { get; set; }
     }
 }
