@@ -14,7 +14,7 @@
     <Authors>William Bishop</Authors>
     <Title>JsonDiffPatch.Net</Title>
     <Copyright>Copyright © William Bishop 2017</Copyright>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/wbish/jsondiffpatch.net/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>JSON object diffs and reversible patching</Description>
     <PackageId>JsonDiffPatch.Net</PackageId>
     <PackageTags>json diff patch unpatch</PackageTags>
