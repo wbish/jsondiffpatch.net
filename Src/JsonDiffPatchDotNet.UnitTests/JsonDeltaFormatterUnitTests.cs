@@ -2,7 +2,6 @@ using System.Linq;
 using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using System.Linq;
 
 namespace JsonDiffPatchDotNet.UnitTests
 {
