@@ -13,12 +13,13 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 			From = from;
 		}
 
-		public Operation(string op, string path, string from, object value)
+		public Operation(string op, string path, string from, object value, object oldValue)
 		{
 			Op = op;
 			Path = path;
 			From = from;
 			Value = value;
+			OldValue = oldValue;
 		}
 
 		[JsonProperty("path")]
@@ -32,5 +33,8 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 
 		[JsonProperty("value")]
 		public object Value { get; set; }
+		
+		[JsonProperty("old", NullValueHandling = NullValueHandling.Ignore)]
+		public object OldValue { get; set; }
 	}
 }
