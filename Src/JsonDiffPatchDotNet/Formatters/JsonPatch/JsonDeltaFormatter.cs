@@ -83,7 +83,7 @@ namespace JsonDiffPatchDotNet.Formatters.JsonPatch
 
 		private void FormatModified(JsonFormatContext context, JToken delta)
 		{
-			context.PushCurrentOp(OperationTypes.Replace, delta[1]);
+			context.PushCurrentOp(OperationTypes.Replace, delta[1], delta[0]);
 		}
 
 		private void FormatDeleted(JsonFormatContext context)
