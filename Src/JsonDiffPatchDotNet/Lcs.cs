@@ -34,7 +34,7 @@ namespace JsonDiffPatchDotNet
             {
                 for (int j = 1; j <= right.Count; j++)
                 {
-                    if (match.Match(left[i - 1], right[j - 1]))
+                    if (match.MatchArrayElement(left[i - 1], i-1, right[j - 1], j-1))
                     {
                         arr[i, j] = arr[i - 1, j - 1] + 1;
                     }

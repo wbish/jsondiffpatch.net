@@ -394,7 +394,11 @@ namespace JsonDiffPatchDotNet
 
 			while (commonHead < left.Count
 				&& commonHead < right.Count
-				&& itemMatch.Match(left[commonHead], right[commonHead]))
+				&& itemMatch.MatchArrayElement(
+					left[commonHead],
+					commonHead,
+					right[commonHead],
+					commonHead))
 			{
 				var index = commonHead;
 				var child = Diff(left[index], right[index]);
@@ -407,7 +411,11 @@ namespace JsonDiffPatchDotNet
 
 			while (commonTail + commonHead < left.Count
                 && commonTail + commonHead < right.Count
-                && itemMatch.Match(left[left.Count - 1 - commonTail], right[right.Count - 1 - commonTail]))
+                && itemMatch.MatchArrayElement(
+					left[left.Count - 1 - commonTail],
+					left.Count - 1 - commonTail,
+					right[right.Count - 1 - commonTail],
+					right.Count - 1 - commonTail))
             {
                 var index1 = left.Count - 1 - commonTail;
                 var index2 = right.Count - 1 - commonTail;
