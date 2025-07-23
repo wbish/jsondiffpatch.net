@@ -206,7 +206,14 @@ namespace JsonDiffPatchDotNet
 
 				if (patchArray.Count == 2)	// Replace
 				{
-					return patchArray[0];
+					if (_options.UnpatchIgnoreOriginalValue || right != null && right.Type == patchArray[1].Type && right.Value<JValue>().Equals(patchArray[1].Value<JValue>()))
+					{
+						return patchArray[0];
+					}
+					else
+					{
+						return right;
+					}
 				}
 
 				if (patchArray.Count == 3)	// Delete, Move or TextDiff

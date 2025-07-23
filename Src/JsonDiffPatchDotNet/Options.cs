@@ -13,6 +13,7 @@ namespace JsonDiffPatchDotNet
 			TextDiff = TextDiffMode.Efficient;
 			MinEfficientTextDiffLength = 50;
 			DiffArrayOptions = new ArrayOptions();
+			UnpatchIgnoreOriginalValue = true;
 		}
 
 		/// <summary>
@@ -57,7 +58,9 @@ namespace JsonDiffPatchDotNet
         /// To improve the results leveraging the power of LCS(and position move detection) you need to provide a way to compare 2 objects.
         /// </summary>
         public Func<JToken, object> ObjectHash { get; set; }
-    }
+
+		public bool UnpatchIgnoreOriginalValue { get; set; }
+	}
 
 	public sealed class ArrayOptions
 	{

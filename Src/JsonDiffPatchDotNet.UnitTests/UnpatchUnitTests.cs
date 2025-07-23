@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -237,6 +237,34 @@ namespace JsonDiffPatchDotNet.UnitTests
 			var patched = jdp.Unpatch(right, patch);
 
 			Assert.IsTrue(JToken.DeepEquals(left.ToString(), patched.ToString()));
+		}
+
+		[Test]
+		public void Unpatch_ObjectIfOldValueMatches_Success()
+		{
+			var jdpUnpatchIgnoreOriginalValue = new JsonDiffPatch(new Options { UnpatchIgnoreOriginalValue = false });
+			var jdp = new JsonDiffPatch();
+			var stage1 = JToken.Parse(@"{""stage"":1}");
+			var stage2 = JToken.Parse(@"{""stage"":2}");
+			var stage3 = JToken.Parse(@"{""stage"":3}");
+
+			var diff = jdp.Diff(stage1, stage2);
+
+			// Try to unpatch with stage2 not ignoring original value
+			var unpatched_stage2 = jdpUnpatchIgnoreOriginalValue.Unpatch(stage2, diff);
+			Assert.AreEqual(stage1.ToString(), unpatched_stage2.ToString());
+
+			// Try to unpatch with stage3 not ignoring original value
+			var unpatched_stage3 = jdpUnpatchIgnoreOriginalValue.Unpatch(stage3, diff);
+			Assert.AreNotEqual(stage1.ToString(), unpatched_stage3.ToString());
+
+			// Try to unpatch with stage2 ignoring original value
+			unpatched_stage2 = jdp.Unpatch(stage2, diff);
+			Assert.AreEqual(stage1.ToString(), unpatched_stage2.ToString());
+
+			// Try to unpatch with stage3 ignoring original value
+			unpatched_stage3 = jdp.Unpatch(stage3, diff);
+			Assert.AreEqual(stage1.ToString(), unpatched_stage3.ToString());
 		}
 	}
 }
