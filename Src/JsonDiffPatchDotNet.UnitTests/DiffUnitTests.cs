@@ -220,20 +220,81 @@ namespace JsonDiffPatchDotNet.UnitTests
 		}
 
 		[Test]
-		public void Diff_EfficientArrayDiffWithComplexObjects_IncludeMove_ValidDiff()
+		public void Diff_EfficientArrayDiffWithComplexObjectHeadAdded_NoObjectHash_DisabledMove_ValidDiff()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>(), DiffArrayOptions = new ArrayOptions { DetectMove = true, IncludeValueOnMove = true } });
-			//var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, DiffArrayOptions = new ArrayOptions { DetectMove = false, IncludeValueOnMove = false } });
 			var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
-			var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]");
+			var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC7"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
 
 			JObject diff = jdp.Diff(left, right) as JObject;
 
 			Assert.IsNotNull(diff);
-			Assert.AreEqual(4, diff.Properties().Count());
-			Assert.AreEqual(diff["_2"], JToken.Parse("['', 0, 3]"));
-			Assert.AreEqual(diff["0"]["p"], JToken.Parse("[true, false]"));
-			Assert.AreEqual(diff["1"]["p"], JToken.Parse("[false, true]"));
+			Assert.AreEqual(5, diff.Properties().Count());
+			Assert.AreEqual(diff["0"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC7""]"));
+			Assert.AreEqual(diff["1"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8""]"));
+			Assert.AreEqual(diff["2"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9""]"));
+			Assert.AreEqual(diff["3"], JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]"));
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffWithComplexObjectHeadAdded_NoObjectHash_EnableddMove_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, DiffArrayOptions = new ArrayOptions { DetectMove = true, IncludeValueOnMove = true } });
+			var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
+			var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC7"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(5, diff.Properties().Count());
+			Assert.AreEqual(diff["0"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC7""]"));
+			Assert.AreEqual(diff["1"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8""]"));
+			Assert.AreEqual(diff["2"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9""]"));
+			Assert.AreEqual(diff["3"], JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]"));
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffWithComplexObjectMiddleAdded_NoObjectHash_EnabledMove_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, DiffArrayOptions = new ArrayOptions { DetectMove = true, IncludeValueOnMove = true } });
+			var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]");
+			var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""NEW ID VALUE"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(3, diff.Properties().Count());
+			Assert.AreEqual(diff["2"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""NEW ID VALUE""]"));
+			Assert.AreEqual(diff["3"], JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]"));
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffWithComplexObjectMiddleRemoved_NoObjectHash_EnabledMove_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, DiffArrayOptions = new ArrayOptions { DetectMove = true, IncludeValueOnMove = true } });
+			var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
+			var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(3, diff.Properties().Count());
+			Assert.AreEqual(diff["1"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10""]"));
+			Assert.IsNotNull(diff["_2"]);
+		}
+
+		[Test]
+		public void Diff_EfficientArrayDiffWithComplexObject_NoObjectHash_ValidDiff()
+		{
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
+			var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
+			var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""NEW ID VALUE"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":true}]");
+
+			JObject diff = jdp.Diff(left, right) as JObject;
+
+			Assert.IsNotNull(diff);
+			Assert.AreEqual(2, diff.Properties().Count());
+			Assert.AreEqual(diff["1"]["Id"], JToken.Parse(@"[""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""NEW ID VALUE""]"));
 		}
 
 		[Test]
